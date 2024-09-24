@@ -82,7 +82,7 @@
       .logo {
         width: 48px;
         height: 48px;
-        margin-right: 8px;
+        margin-right: var(--margin-main-right);
       }
       display: flex;
       align-items: center;
@@ -90,8 +90,8 @@
       font-size: 32px;
     }
     .tips {
-      margin-bottom: 10px;
-      font-size: 14px;
+      margin-bottom: var(--margin-main-bottom);
+      font-size: var(--fontSize-main-normal);
       color: #808695;
     }
     .form {

@@ -23,6 +23,7 @@
           </n-icon>
           <div v-if="showName">Bin-Admin</div>
         </div>
+        <side-menu />
       </n-layout-sider>
       <n-layout
         class="main"
@@ -58,7 +59,7 @@
   }
 
   .n-layout-sider {
-    background: var(--color-main-bg);
+    background: #303438;
     height: 100vh;
     .name {
       display: flex;
@@ -68,6 +69,7 @@
       font-size: 18px;
       font-weight: 500;
       white-space: nowrap;
+      color: #ffffff;
     }
   }
   .main {

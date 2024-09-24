@@ -6,13 +6,31 @@
 
 <script setup lang="ts">
   import { GlobalThemeOverrides } from 'naive-ui'
-  const themeOverrides: GlobalThemeOverrides = {
-    Input: {
-      borderHover: '#70c0e8',
-      borderFocus: '#70c0e8',
-      boxShadowFocus: '0 0 0 2px rgba(112,192,232,0.6)',
-      caretColor: '#70c0e8'
-    }
-  }
+  import { useSystemStyleSettingStore } from '@/store/modules/systemStyleSetting'
+  const useSystemStyleSetting = useSystemStyleSettingStore()
+  const themeOverrides: GlobalThemeOverrides =
+    useSystemStyleSetting.getNaiveComponentStyle
 </script>
-<style scoped lang="less"></style>
+<style lang="less">
+  :root {
+    --color-font: #333333;
+    --color-main-bg: #ffffff;
+    --color-sider-bg: #f2f2f2;
+    --color-header-bg: #f2f2f2;
+    --color-content-bg: #f2f2f2;
+    --fontSize-main-min: 12px;
+    --fontSize-main-normal: 14px;
+    --fontSize-main-max: 18px;
+    --margin-mian: 10px;
+    --margin-main-top: 10px;
+    --margin-main-bottom: 10px;
+    --margin-main-left: 8px;
+    --margin-main-right: 8px;
+    --padding-mian: 10px;
+    --padding-main-top: 10px;
+    --padding-main-bottom: 10px;
+    --padding-mian-left: 8px;
+    --padding-main-right: 8px;
+    --main-gap: 4px;
+  }
+</style>
