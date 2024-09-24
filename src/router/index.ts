@@ -40,7 +40,6 @@ interface CustomRouterOptions extends RouterOptions {
 
 export const whiteList = ['/login', '/redirect', '/redirect/all']
 export const asyncRoutes = [...routesModuleList]
-
 export const constantRoute: Array<RouteRecordRaw> = [
   {
     path: '/login',
@@ -56,9 +55,7 @@ export const constantRoute: Array<RouteRecordRaw> = [
     redirect: '/login'
   }
 ]
-
 const routes = [...constantRoute, ...asyncRoutes]
-console.log(routes)
 
 const routerHistory: RouterHistory = createWebHistory()
 const customRouterOptions: CustomRouterOptions = {
