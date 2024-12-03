@@ -1,5 +1,5 @@
 <template>
-  <div>主页</div>
+  <div>nothing to do!!!</div>
 </template>
 
 <script setup lang="ts"></script>

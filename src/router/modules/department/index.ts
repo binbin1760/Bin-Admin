@@ -4,7 +4,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/department',
     meta: {
-      name: '组织人事',
+      name: '公司架构',
       sort: 1
     },
     redirect: '/department/index',
@@ -13,12 +13,23 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/department/index',
         meta: {
-          name: '组织人事',
+          name: '部门',
           isRoot: true,
           hidden: true,
-          affix: true
+          affix: false
         },
-        component: () => import('@/views/view-department/index.vue')
+        component: () =>
+          import('@/views/view-department/view/department-page.vue')
+      },
+      {
+        path: '/staff/index',
+        meta: {
+          name: '员工',
+          isRoot: true,
+          hidden: true,
+          affix: false
+        },
+        component: () => import('@/views/view-department/view/staff-page.vue')
       }
     ]
   }

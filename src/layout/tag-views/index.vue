@@ -31,13 +31,13 @@
         </n-dropdown>
       </div>
       <VueDraggable
-        v-model="tagViews.getDragTags"
+        v-model="dragTagList"
         filter=".fix"
         class="tag-views"
       >
         <n-dropdown
           :options="options"
-          v-for="(item, index) in tagViews.getDragTags"
+          v-for="(item, index) in dragTagList"
           :key="index"
           :show="showDragIndex === index"
           @clickoutside="() => (showDragIndex = undefined)"
@@ -81,6 +81,18 @@
   const tagViews = useTagViewsStore()
   const showIndex = ref<number>()
   const showDragIndex = ref<number>()
+
+  const { getDragTags } = storeToRefs(tagViews)
+  const dragTagList = computed({
+    get() {
+      return getDragTags.value
+    },
+    set() {
+      return getDragTags.value
+    }
+  })
+  tagViews.initTagViews()
+
   const options = computed(() => {
     return [
       {
@@ -118,7 +130,6 @@
       return route.fullPath
     }
   })
-  tagViews.initTagViews()
 
   function showFixDrapMenu(index: number) {
     showIndex.value = index

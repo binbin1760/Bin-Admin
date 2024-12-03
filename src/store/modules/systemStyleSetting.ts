@@ -16,6 +16,12 @@ export const useSystemStyleSettingStore = defineStore({
     getNaiveComponentStyle(): GlobalThemeOverrides {
       return this.naiveComponentStyle
     }
+  },
+  actions: {
+    // 设置组件样式
+    setStyle(key: string, value: string) {
+      this.naiveComponentStyle[key] = value
+    }
   }
 })
 
