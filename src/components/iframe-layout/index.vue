@@ -1,5 +1,7 @@
 <template>
-  <div>组织人事</div>
+  <div>
+    <router-view></router-view>
+  </div>
 </template>
 
 <script setup lang="ts"></script>

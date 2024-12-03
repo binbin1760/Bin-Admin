@@ -1,5 +1,4 @@
 import { GlobalThemeOverrides } from 'naive-ui'
-
 //naive ui组件样式配置
 export const naiveComponentStyle: GlobalThemeOverrides = {
   common: {

@@ -4,7 +4,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/home',
     meta: {
-      name: '主页',
+      name: '控制面板',
       sort: 0
     },
     redirect: '/home/dashboard',

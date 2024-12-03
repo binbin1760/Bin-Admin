@@ -19,10 +19,10 @@ export const useTagViewsStore = defineStore({
   }),
   getters: {
     getFixTags(): Array<tagType> {
-      return this.tagList.filter((item) => item.affix)
+      return this.tagList.filter((item) => item.affix === true)
     },
     getDragTags(): Array<tagType> {
-      return this.tagList.filter((item) => !item.affix)
+      return this.tagList.filter((item) => item.affix === false)
     },
     getTagListLength(): number {
       return this.tagList.length
