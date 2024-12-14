@@ -35,9 +35,9 @@ export const naiveComponentStyle: GlobalThemeOverrides = {
   //侧栏菜单组件样式
   Menu: {
     //激活菜单的背景
-    itemColorActive: '#1890FF',
+    itemColorActive: '#FF1856',
     itemColorHover: '#1890FF',
-    itemColorActiveHover: '#1890FF',
+    itemColorActiveHover: '#FF1856',
     //激活菜单文本样式
     itemTextColor: '#FFFFFF',
     itemTextColorHover: '#FFFFFF',
@@ -58,10 +58,37 @@ export const naiveComponentStyle: GlobalThemeOverrides = {
     arrowColorActive: '#FFFFFF',
     arrowColorActiveHover: '#ffffff',
     arrowColorChildActive: '#ffffff',
-    arrowColorChildActiveHover: '#ffffff'
+    arrowColorChildActiveHover: '#ffffff',
     //菜单压缩后的样式
+    itemIconColorCollapsed: '#ffffff'
+  },
+  //下拉菜单
+  Dropdown: {
+    color: '#FFFFFF',
+    optionTextColor: '#333333',
+    optionTextColorHover: '#ffffff',
+    optionTextColorActive: '#ffffff',
+    optionColorActive: '#2C8DE8',
+    optionColorHover: '#2C8DE8',
+    prefixColor: '#000000'
+  },
+  //输入框
+  Input: {
+    heightMedium: '34px',
+    fontSizeMedium: '14px',
+    borderRadius: '3px',
+    colorFocus: '#FFFFFF',
+    textColor: '#333333',
+    caretColor: '#333333',
+    placeholderColor: '#999999',
+    textColorDisabled: '#999999',
+    color: '#ffffff',
+    border: '1px solid #E0E0E6',
+    borderFocus: '1px solid  #E71920FF',
+    borderHover: '1px solid  #E71920FF',
+    boxShadowFocus: '0 0 8px #E71920FF'
   },
   Tag: {
-    colorInfo: 'red'
+    colorInfo: '#1FA3E5FF'
   }
 }

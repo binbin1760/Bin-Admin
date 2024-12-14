@@ -6,7 +6,7 @@ import { setupStore } from '@/store'
 import { setupDirectives } from '@/directives'
 import App from './App.vue'
 
-async function initApp() {
+function initApp() {
   const app = createApp(App)
   setupStore(app)
   setupRouter(app)

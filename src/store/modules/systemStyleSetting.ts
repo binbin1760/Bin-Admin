@@ -18,10 +18,23 @@ export const useSystemStyleSettingStore = defineStore({
     }
   },
   actions: {
-    // 设置组件样式
-    setStyle(key: string, value: string) {
-      this.naiveComponentStyle[key] = value
+    // 保存自定义样式
+    saveNaiveComponentStyleToloacl(): void {
+      const data = JSON.stringify(this.$state.naiveComponentStyle)
+      localStorage.setItem('styleList', data)
+    },
+    // 读取
+    getLocalStyle() {
+      const data = localStorage.getItem('styleList')
+      const temp = data ? JSON.parse(data) : null
+      this.naiveComponentStyle = temp ? temp : naiveComponentStyle
+    },
+    //重置为默认样式
+    reSetTodefault(): void {
+      localStorage.removeItem('styleList')
+      this.naiveComponentStyle = naiveComponentStyle
     }
+    //基于文档定向修改
   }
 })
 

@@ -2,24 +2,24 @@ import { RouteRecordRaw } from 'vue-router'
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/incatoryLibrary',
+    path: '/materials',
     meta: {
-      name: '指标管理',
+      name: '物料管理',
       sort: 1
     },
-    redirect: '/incatoryLibrary/index',
+    redirect: '/materials/index',
     component: () => import('@/layout/index.vue'),
     children: [
       {
-        path: '/incatoryLibrary/index',
+        path: '/materials/index',
         meta: {
-          name: '指标库',
+          name: '生产原料',
           isRoot: true,
           hidden: true,
           affix: false
         },
         component: () =>
-          import('@/views/view-indicattory/view/indicatory-library.vue')
+          import('@/views/view-materials/view/produce-materials.vue')
       }
     ]
   }
