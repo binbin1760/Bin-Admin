@@ -36,6 +36,7 @@
       closable
       :placement="systemDrawerPlacement"
       default-widt="500"
+      :show-mask="false"
       resizable
     >
       <n-drawer-content closable>

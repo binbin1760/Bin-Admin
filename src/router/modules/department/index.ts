@@ -4,7 +4,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/department',
     meta: {
-      name: '公司架构',
+      name: '生产架构',
       sort: 1
     },
     redirect: '/department/index',
@@ -13,7 +13,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/department/index',
         meta: {
-          name: '部门',
+          name: '产品线',
           isRoot: true,
           hidden: true,
           affix: false
@@ -24,7 +24,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: '/staff/index',
         meta: {
-          name: '员工',
+          name: '生产员工',
           isRoot: true,
           hidden: true,
           affix: false

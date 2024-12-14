@@ -2,14 +2,20 @@
   <div class="style-set-list">
     <n-collapse>
       <CommnStyle />
+      <SideMenuStyle />
+      <DropDownStyle />
+      <InputStyle />
     </n-collapse>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { useSystemStyleSettingStore } from '@/store/modules/systemStyleSetting'
-  import { CommnStyle } from './components'
-  const systemSetStore = useSystemStyleSettingStore()
+  import {
+    CommnStyle,
+    SideMenuStyle,
+    DropDownStyle,
+    InputStyle
+  } from './components'
   const showDraw = defineModel('showDraw', { type: Boolean })
   // 按钮 侧栏菜单  面包屑  表格.....
 </script>
