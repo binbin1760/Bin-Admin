@@ -10,7 +10,7 @@ export interface Pagination {
 export interface BaseResponse<T> {
   data: T
   code: number
-  pagination?: Pagination
+  pagination: Pagination
   message: string
 }
 
@@ -33,7 +33,6 @@ service.interceptors.request.use(
     if (user.token) {
       config.headers['Authorization'] = `bear ${user.token}`
     }
-    config.headers['Content-Type'] = 'application/json'
     return config
   },
   (error) => {

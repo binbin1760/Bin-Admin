@@ -1,5 +1,4 @@
 import { createApp } from 'vue'
-import 'animate.css'
 import './style.css'
 import './assets/icon-font/iconfont.css'
 import { setupRouter } from './router/index'

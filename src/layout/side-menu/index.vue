@@ -1,6 +1,5 @@
 <template>
   <n-menu
-    ref="Nmenu"
     v-model:value="activeMenu"
     :options="menu"
     @update:value="selectRoute"
@@ -13,10 +12,11 @@
   import { NIcon, type MenuOption } from 'naive-ui'
   import { RouteRecordRaw } from 'vue-router'
   import { BookmarkOutline } from '@vicons/ionicons5'
-  const Nmenu = ref<any>()
+
   const route = useRoute()
   const router = useRouter()
   const useAsycRoutes = useAsyncRouteStore()
+  const baseMenu = useAsycRoutes.getAsyncRoutes
   function renderIcon(icon: Component) {
     return () => h(NIcon, null, { default: () => h(icon) })
   }
@@ -37,7 +37,7 @@
       }
     })
   }
-  let menu = ref<MenuOption[]>([])
+  const menu: MenuOption[] = computedMenu(baseMenu)
   const activeMenu = computed({
     get() {
       return route.fullPath
@@ -49,21 +49,5 @@
   const selectRoute = (key: string) => {
     router.push(key)
   }
-  watch(
-    route,
-    (newVal) => {
-      const { fullPath } = newVal
-      Nmenu.value?.showOption(fullPath)
-    },
-    { immediate: true }
-  )
-
-  watch(
-    useAsycRoutes.getAsyncRoutes,
-    (newVal) => {
-      menu.value = computedMenu(newVal)
-    },
-    { immediate: true }
-  )
 </script>
 <style scoped lang="less"></style>

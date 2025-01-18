@@ -14,7 +14,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '/materials/index',
         meta: {
           name: '生产原料',
-          isRoot: false,
+          isRoot: true,
           hidden: true,
           affix: false
         },
