@@ -14,7 +14,7 @@ const routes: Array<RouteRecordRaw> = [
         path: '/home/dashboard',
         meta: {
           name: '主页',
-          isRoot: true,
+          isRoot: false,
           hidden: true,
           affix: true
         },
