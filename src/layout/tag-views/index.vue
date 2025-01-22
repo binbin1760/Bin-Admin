@@ -222,8 +222,6 @@
       align-items: center;
       gap: var(--main-gap);
       flex-wrap: nowrap;
-      margin-top: 8px;
-      padding-bottom: 8px;
     }
     .tag-view {
       padding: 4px;
