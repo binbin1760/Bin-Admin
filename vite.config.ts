@@ -4,11 +4,11 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import { fileURLToPath } from 'url'
+import vueJsxPlugin from '@vitejs/plugin-vue-jsx'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd())
   const { VITE_BASE_API } = env
-  console.log(VITE_BASE_API)
 
   return {
     plugins: [
@@ -36,7 +36,8 @@ export default defineConfig(({ mode, command }) => {
         deep: true,
         dirs: ['src/components', 'src/layout'],
         dts: 'src/dts/components.d.ts'
-      })
+      }),
+      vueJsxPlugin()
     ],
     css: {
       preprocessorOptions: {

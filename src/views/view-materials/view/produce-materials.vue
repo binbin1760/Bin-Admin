@@ -1,6 +1,9 @@
 <template>
   <div class="library">
-    <div class="data-filter"></div>
+    <div
+      ref="dataFilter"
+      class="data-filter"
+    ></div>
   </div>
 </template>
 
@@ -12,6 +15,7 @@
       display: flex;
       align-items: center;
       gap: calc(var(--margin-main) * 2);
+      height: 100%;
     }
   }
 </style>
