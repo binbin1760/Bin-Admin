@@ -1,77 +1,75 @@
 <template>
-  <div class="tree-set">
-    <div class="tree">
-      <n-tree
-        block-line
-        :data="treeOptons"
-        selectable
-        expand-on-click
-        :node-props="getDepInfo"
-        :default-expanded-keys="treeDefaultVal"
-        :default-selected-keys="treeDefaultVal"
-      />
-    </div>
-    <div class="set">button of page</div>
-  </div>
+  <n-data-table
+    :columns="columns"
+    :data="data"
+    :row-key="rowKey"
+    :on-update:checked-row-keys="getSelectedData"
+  />
 </template>
 
 <script setup lang="ts">
-  import { useAsyncRouteStore } from '@/store/modules/asyncRoutes'
+  import type { DataTableColumns } from 'naive-ui'
   import { RouteRecordRaw } from 'vue-router'
-  import type { TreeOption } from 'naive-ui'
-  import { getSideMenuList } from '@/api'
-  const asyncRouteStore = useAsyncRouteStore()
+  import { asyncRoutes } from '@/router/index'
+  import styles from './common.module.css'
+  //菜单在本地,按钮在数据库 如何做到数据融合？
+  const data = ref<RouteRecordRaw[]>(asyncRoutes)
 
-  function getTreeData(data: RouteRecordRaw[]): Array<TreeOption> {
-    const treeArr = data.map((item) => {
-      if (item.children && item.children.length > 0) {
-        const children = getTreeData(
-          item.children
-        ) as unknown as Array<TreeOption>
-        return { label: item.meta?.name, key: item.path, children }
-      } else {
-        return { label: item.meta?.name, key: item.path }
+  const columns: DataTableColumns<RouteRecordRaw> = [
+    {
+      title: '菜单名称',
+      key: 'meta.name',
+      align: 'center',
+      fixed: 'left',
+      width: 164,
+      ellipsis: {
+        tooltip: true
       }
-    })
-    return treeArr as unknown as Array<TreeOption>
-  }
+    },
+    {
+      title: '导航路径',
+      key: 'path',
+      align: 'center',
+      fixed: 'left',
+      width: 300,
+      ellipsis: {
+        tooltip: true
+      }
+    },
+    {
+      title: '菜单按钮',
+      key: 'buttons',
+      align: 'center'
+    },
+    {
+      title: '操作',
+      key: '',
+      align: 'center',
+      fixed: 'right',
+      width: 128,
+      render(row) {
+        const add = h(
+          'span',
+          { class: styles['operation-cell'] },
+          { default: () => '新增按钮' }
+        )
 
-  let treeOptons = ref<Array<TreeOption>>([])
-  let treeDefaultVal = ref<string[]>([])
-
-  function getDepInfo({ option }: { option: TreeOption }) {
-    return {
-      onClick() {
-        console.log(option)
+        return add
       }
     }
-  }
+  ]
 
-  async function getSideMenu() {
-    const result = await getSideMenuList()
-    asyncRouteStore.setAsyncRoutes(result.data)
-    treeOptons.value = getTreeData(asyncRouteStore.getAsyncRoutes)
-    asyncRouteStore.setRootMenu({
-      path: treeOptons.value[0].key as string,
-      name: treeOptons.value[0].label as string
-    })
-    asyncRouteStore.setCurrentEditMenu(treeOptons.value[0].key as string)
-    treeDefaultVal.value = [treeOptons.value[0].key as string]
+  const rowKey = (row: RouteRecordRaw) => row.path
+
+  function getSelectedData(
+    _keys: Array<string | number>,
+    _rows: object[],
+    _meta: {
+      row: object | undefined
+      action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
+    }
+  ) {
+    console.log(_keys, _rows)
   }
-  getSideMenu()
 </script>
-<style scoped lang="less">
-  .tree-set {
-    height: 100%;
-    display: flex;
-    gap: calc(var(--main-gap) * 2.5);
-    .tree {
-      width: 300px;
-      border: 1px solid #dddddd;
-      border-radius: 2px;
-    }
-    .set {
-      flex: 1;
-    }
-  }
-</style>
+<style scoped lang="less"></style>

@@ -1,1 +1,5 @@
 export * from './permission'
+export * from './userInfo'
+export * from './department'
+export * from './login'
+export * from './aiChat.ts'

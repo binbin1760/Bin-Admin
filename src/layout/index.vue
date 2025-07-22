@@ -21,7 +21,7 @@
           <n-icon size="32">
             <bin-logo />
           </n-icon>
-          <div v-if="showName">Bin-Admin</div>
+          <div v-if="showName">{{ companyName }}</div>
         </div>
         <side-menu />
       </n-layout-sider>
@@ -34,9 +34,7 @@
           <TagViews />
         </n-layout-header>
         <n-layout-content content-style="padding: 12px;">
-          <AppProvider>
-            <RouterView></RouterView>
-          </AppProvider>
+          <RouterView></RouterView>
         </n-layout-content>
       </n-layout>
     </n-layout>
@@ -44,10 +42,24 @@
 </template>
 
 <script setup lang="ts">
+  import { getTopDep } from '@/api'
+  import { saveTopDep } from '@/unitls'
   const showName = ref<boolean>(true)
+  const companyName = ref<string>()
   function isCollapsed(val: boolean) {
     showName.value = !val
   }
+
+  async function getCompanyInfo() {
+    const result = await getTopDep()
+    if (result.code === 200) {
+      companyName.value = result.data.name
+      saveTopDep({ id: result.data.id, name: result.data.name, treeLevl: 0 })
+    } else {
+      throw new Error('获取company info 失败')
+    }
+  }
+  getCompanyInfo()
 </script>
 <style scoped lang="less">
   .n-layout-header {

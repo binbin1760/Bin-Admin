@@ -18,7 +18,7 @@
       >
         <n-form-item>
           <n-input
-            v-model:value="params.id"
+            v-model:value="params.code"
             placeholder="请输入账号"
           >
             <template #prefix>
@@ -33,7 +33,7 @@
         </n-form-item>
         <n-form-item path="pass">
           <n-input
-            v-model:value="params.pass"
+            v-model:value="params.paw"
             placeholder="请输入密码"
             type="password"
           >
@@ -48,6 +48,12 @@
           </n-input>
         </n-form-item>
       </n-form>
+      <span
+        class="forget-paw"
+        @click="forgetPaw"
+      >
+        忘记密码？
+      </span>
       <n-button
         type="info"
         style="width: 100%"
@@ -63,13 +69,43 @@
 <script setup lang="ts">
   import faviocnIcon from '@/assets/faviocn.png'
   import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'
+  import { login } from '@/api'
+  import { saveUserInfo } from '@/unitls'
+  const dialog = useDialog()
+  const message = useMessage()
   const rouetr = useRouter()
-  const params = reactive<{ id: string; pass: string }>({
-    id: '',
-    pass: ''
+  const params = reactive<{ code: string; paw: string }>({
+    code: '',
+    paw: ''
   })
-  function submit() {
-    rouetr.push('/home/dashboard')
+  async function submit() {
+    if (!params.code) {
+      message.info('请输入账号')
+      return
+    }
+
+    if (!params.paw) {
+      message.info('请输入密码')
+      return
+    }
+    const res = await login(params)
+    message.info(res.message, { duration: 3000, closable: true })
+    if (res.code === 200) {
+      saveUserInfo(res.data)
+      rouetr.push('/home/dashboard')
+    }
+  }
+
+  function forgetPaw() {
+    if (!params.code) {
+      message.error('请输入账号,请先输入账号再进行找回！！！')
+      return
+    }
+    dialog.warning({
+      title: '提示',
+      content: '以为您联系管理员,稍后请注意接听管理员电话',
+      positiveText: '确认'
+    })
   }
 </script>
 <style scoped lang="less">
@@ -99,6 +135,15 @@
       flex-direction: column;
       align-items: center;
       width: 320px;
+      .forget-paw {
+        cursor: pointer;
+        color: #1890ff;
+        text-decoration: underline;
+        margin-left: auto;
+      }
+      .forget-paw:hover {
+        color: #ff4040;
+      }
     }
   }
 </style>

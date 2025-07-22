@@ -13,9 +13,14 @@
       <n-tree
         block-line
         :data="depData"
-        checkable
+        :default-value="defaultKey"
+        :accordion="true"
         selectable
-        :nodeProps="getDepInfo"
+        expand-on-click
+        :default-expanded-keys="[currUserDep.depId ? currUserDep.depId : '']"
+        :default-selected-keys="[currUserDep.depId ? currUserDep.depId : '']"
+        :on-update:selected-keys="treeSelectChanged"
+        :on-load="hanlLoadTreeNode"
       />
     </div>
     <div class="data-table">
@@ -26,7 +31,7 @@
         >
           新 增
         </n-button>
-        <n-button type="info">导 出</n-button>
+        <!-- <n-button type="info">导 出</n-button> -->
         <div class="search-box">
           <n-input
             round
@@ -43,49 +48,56 @@
         </div>
       </div>
       <base-table
+        ref="baseTableRef"
         :columns="column()"
-        :request-api="getData"
-        :query="query"
+        :request-api="getUserList"
+        :query="selectDepId"
+        :other-props="{ 'scroll-x': 2200 }"
+        @get-table-data="getUserTableData"
       />
     </div>
     <!-- add new staff modal -->
-    <CreateStaffModal v-model:show="showModal" />
+    <CreateStaffModal
+      @refresh-table="refreshData"
+      v-model:show="showModal"
+    />
+    <!-- edit staff info -->
+    <EditStaffDraw
+      v-model:data="editData"
+      v-model:active="showDrawe"
+      @refresh="refreshData"
+    />
+    <!-- view staff info  -->
+    <ViewStaffDraw
+      v-model:active="showViewDraw"
+      v-model:data="viewData"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
   import { DataTableColumns, TreeOption } from 'naive-ui'
-  import { StaffType } from '../baseType'
-  import { BaseResponse } from '@/unitls/request'
+  import {
+    DepartmentType,
+    IDENTITY_NAME,
+    JOB_GRADE_NAME,
+    STAFF_STATUS,
+    StaffType
+  } from '../baseType'
   import { Search } from '@vicons/ionicons5'
-  import { CreateStaffModal } from '../components'
-  const depData = ref<Array<TreeOption>>([
-    {
-      label: '部门CD',
-      key: 1,
-      prefix() {
-        return h('span', {}, { default: () => '1' })
-      },
-      children: [
-        {
-          label: '部门A',
-          key: 2,
-          prefix() {
-            return h('span', {}, { default: () => '2' })
-          },
-          children: [
-            {
-              label: '子部门子部门子部门子部门子部门子部门子部门子部门子部门',
-              key: 3,
-              prefix() {
-                return h('span', {}, { default: () => '3' })
-              }
-            }
-          ]
-        }
-      ]
-    }
-  ])
+  import { CreateStaffModal, EditStaffDraw, ViewStaffDraw } from '../components'
+  import { getUserList, deleteUserById, getDepartmentTree } from '@/api'
+  import { depStaffStore } from '@/store/modules/departmentAndStaff'
+  import { clickCopy } from '@/unitls'
+  import styles from '../common.module.css'
+  import { useDepartmentHook } from '../useDepartmentHook'
+  import { formatTimeRange } from '@/unitls/time'
+
+  const { depData, currUserDep } = useDepartmentHook()
+  const message = useMessage()
+  const dialog = useDialog()
+  const useDpeStaffStore = depStaffStore()
+  const baseTableRef = ref<any>()
 
   const params = reactive({
     depName: '',
@@ -96,6 +108,8 @@
       title: '序号',
       key: '',
       align: 'center',
+      fixed: 'left',
+      width: 60,
       render(_row, index) {
         return h('span', {}, index + 1)
       }
@@ -103,87 +117,275 @@
     {
       title: '员工名称',
       align: 'center',
-      key: 'name'
+      key: 'name',
+      width: 120,
+      fixed: 'left'
+    },
+    {
+      title: '员工工号',
+      align: 'center',
+      key: 'code',
+      fixed: 'left',
+      width: 120,
+      ellipsis: {
+        tooltip: true
+      },
+      render(_row) {
+        return h(
+          'span',
+          {
+            class: styles['dbClikCopy'],
+            onDblclick: () => {
+              clickCopy(
+                String(_row.code),
+                () => {
+                  message.success(`复制${_row.code}成功`)
+                },
+                () => {
+                  message.error(`复制${_row.code}失败`)
+                }
+              )
+            }
+          },
+          { default: () => _row.code }
+        )
+      }
     },
     {
       title: '职位',
       align: 'center',
-      key: 'position'
+      key: 'position',
+      width: 180
     },
     {
-      title: '职级',
+      title: '直接上级',
       align: 'center',
-      key: 'rank'
+      key: 'directSuperior'
     },
     {
       title: '所属部门',
       align: 'center',
-      key: 'depInfo',
+      key: 'department',
       render(row) {
-        return h('span', {}, row.depInfo.departmentName)
+        return h('span', {}, row.department)
       }
     },
     {
-      title: '联系电话',
+      title: '状态',
       align: 'center',
-      key: 'phone'
+      key: 'status',
+      render(row) {
+        let key: string = ''
+        if (row.status === 1) {
+          key = 'STAFF_STATUS_1'
+        }
+
+        if (row.status === 2) {
+          key = 'STAFF_STATUS_2'
+        }
+
+        if (row.status === 3) {
+          key = 'STAFF_STATUS_3'
+        }
+        return h('span', {}, key ? STAFF_STATUS[key] : '-')
+      }
+    },
+    {
+      title: '职级',
+      align: 'center',
+      key: 'jobLevel'
+    },
+    {
+      title: 'MP/S序列',
+      align: 'center',
+      key: 'jobGrade',
+      render: (row) => {
+        return h('span', {}, JOB_GRADE_NAME[row.jobGrade - 1])
+      }
+    },
+    {
+      title: 'M序列',
+      align: 'center',
+      key: 'mGrade'
+    },
+    {
+      title: 'P序列',
+      align: 'center',
+      key: 'pGrade'
+    },
+    {
+      title: 'S序列',
+      align: 'center',
+      key: 'sGrade'
+    },
+    {
+      title: '一级序列',
+      align: 'center',
+      key: 'noeGrade'
+    },
+    {
+      title: '二级序列',
+      align: 'center',
+      key: 'twoGrade'
+    },
+    {
+      title: '身份',
+      align: 'center',
+      key: 'identity',
+      render(row) {
+        return h('span', {}, IDENTITY_NAME[row.identity - 1] || '-')
+      }
+    },
+    {
+      title: '代理时间',
+      align: 'center',
+      key: 'agentTime',
+      width: 240,
+      render(row) {
+        const timeRange =
+          row.agentStartTime && row.agentStartTime
+            ? formatTimeRange(
+                [row.agentStartTime, row.agentEndTime],
+                'yyyy-MM-dd'
+              )
+            : []
+        return h('span', {}, timeRange.length > 0 ? timeRange.join('至') : '-')
+      }
+    },
+    {
+      title: '代理人',
+      align: 'center',
+      key: 'agent',
+      width: 120,
+      fixed: 'right'
     },
     {
       title: '操作',
       align: 'center',
+      width: '200px',
+      fixed: 'right',
       key: '',
-      render() {
-        return h('span', {}, { default: () => '删除' })
+      render(row) {
+        const vDelete = h(
+          'span',
+          {
+            class: styles['operate-delete'],
+            onClick: () => {
+              dialog.warning({
+                title: '危险操作',
+                content: `是否确认删除${row.name}?`,
+                positiveText: '确定',
+                negativeText: '取消',
+                onPositiveClick: () => {
+                  deleteUserInfo(row.id)
+                },
+                onNegativeClick: () => {}
+              })
+            }
+          },
+          { default: () => '删除' }
+        )
+        const vView = h(
+          'span',
+          {
+            class: styles['operate-edit'],
+            onClick: () => {
+              viewData.value = row
+              showViewDrawer()
+            }
+          },
+          { default: () => '查看' }
+        )
+        const vEdit = h(
+          'span',
+          {
+            class: styles['operate-edit'],
+            onClick: () => {
+              if (row.agentStartTime && row.agentEndTime) {
+                row.agentTime = [row.agentStartTime, row.agentEndTime]
+              }
+              editData.value = JSON.parse(JSON.stringify(row))
+              showEditDraw()
+            }
+          },
+          { default: () => '编辑' }
+        )
+        return h('div', { class: styles['operate-cell'] }, [
+          vView,
+          vEdit,
+          vDelete
+        ])
       }
     }
   ]
-  const query = ref({
-    id: 123123,
-    name: 'xxxxx'
-  })
   const showModal = ref<boolean>(false)
-  async function getData(_param): Promise<BaseResponse<StaffType[]>> {
-    return {
-      data: [
-        {
-          id: '231321321',
-          name: '张三',
-          position: '工程师',
-          rank: 1,
-          depInfo: {
-            departmentId: '23123131',
-            departmentName: 'CD部门',
-            departmentLeader: '',
-            departmentLevel: '2',
-            functional: '职能'
-          },
-          phone: '135468798654'
-        }
-      ],
-      code: 200,
-      pagination: {
-        page: 1,
-        pageSize: 20,
-        total: 10
-      },
-      message: '请求成功'
-    }
-  }
+  const showDrawe = ref<boolean>(false)
+  const showViewDraw = ref<boolean>(false)
+  const editData = ref<StaffType>()
+  const viewData = ref<StaffType>()
+  const defaultKey = ref<string>('')
+  const selectDepId = ref<any>({ id: currUserDep.depId })
   function getDepTree() {
     console.log(params)
-  }
-  function getDepInfo({ option }: { option: TreeOption }) {
-    return {
-      onClick() {
-        console.log(option.label)
-      }
-    }
   }
   function filtersTable() {
     console.log(params)
   }
   function addNewStaff() {
     showModal.value = true
+  }
+  function refreshData() {
+    baseTableRef.value?.reFresh()
+  }
+  function showEditDraw() {
+    showDrawe.value = true
+  }
+  function showViewDrawer() {
+    showViewDraw.value = true
+  }
+  async function deleteUserInfo(id: string) {
+    const res = await deleteUserById(id)
+    message.info(res.message)
+    baseTableRef.value?.reFresh()
+  }
+
+  async function hanlLoadTreeNode(node: TreeOption) {
+    const res = await getDepartmentTree(node.key as unknown as string)
+    if (res.code === 200) {
+      node.children = res.data.map((item) => {
+        const { id, name } = item
+        return { label: name, key: id, isLeaf: false, nodeData: item }
+      })
+    } else {
+      node.children = []
+    }
+  }
+
+  function treeSelectChanged(
+    _keys: Array<string | number>,
+    _option: Array<TreeOption | null>,
+    _meta: { node: TreeOption | null; action: 'select' | 'unselect' }
+  ) {
+    if (_meta.action === 'select') {
+      selectDepId.value.id = _meta.node?.key
+      const nodeData = _meta.node?.nodeData as unknown as DepartmentType
+      useDpeStaffStore.setCurrSelectDep({
+        depId: nodeData.id,
+        depName: nodeData.name,
+        isLeaf: nodeData.isLeaf ? true : false,
+        treeLevel: nodeData.treeLevel
+      })
+    }
+
+    if (_meta.action === 'unselect') {
+      selectDepId.value.id = ''
+      useDpeStaffStore.reSetCurrSelectDepData()
+      refreshData()
+    }
+  }
+
+  function getUserTableData(data: StaffType[]) {
+    useDpeStaffStore.setUserList(data)
   }
 </script>
 <style scoped lang="less">
@@ -194,6 +396,7 @@
     .tree {
       width: 300px;
       height: 100%;
+      flex-shrink: 0;
       .serach-box {
         display: flex;
         align-items: center;
@@ -205,6 +408,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
       .btns {
         width: 100%;
         display: flex;

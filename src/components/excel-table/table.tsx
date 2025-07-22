@@ -10,6 +10,26 @@ import styles from './excelTable.module.css'
  * 4. !rows可以获取行的样式信息
  * 5. 填充内容
  * 6. 生成表格
+ *
+ * 细节补充：
+ * 1.单元格的合并信息，并不是计算出一个单元格如何合并的，而是通过merges信息计算出哪些单元格是合并的，这些合并的单元格就不需要渲染了
+ * 2.单元格的样式信息，通过s属性获取，s属性是一个对象，里面包含了单元格的样式信息
+ *
+ *
+ * 后端数据模型：
+ * 1.需要一个配置项，用来配置生成表格
+ * 2.生成表格的配置要能支撑后端数据模型
+ * 3.导入excel生成表格要生成一份对应的表格配置，用于储存在后端
+ *
+ * 由后端数据模型第三点可知：需要做一个模板生成器，用于生成表格配置
+ *
+ *
+ * 配置模型：
+ * group[]  表格分组  一个组可以看作一个独立的表格
+ * groupItem :{ cols ,rows }  cols 列配置 ,rows 相当于data
+ * col：{
+ *  name,key,width,render,align
+ * }
  */
 class analysisExcel {
   wokrBook: any
@@ -70,10 +90,13 @@ class analysisExcel {
       )
       return arr.flat()
     })
+    /**
+     * notRender是不需要渲染的单元格
+     * sheetjs 获取到的merges信息表示那些是合并范围，在这些合并范围内的单元格都不需要渲染。 此范围内的单元格表示合并成了一个单元格
+     */
     const notRender = beLongToMerges
       ?.flat()
       .filter((item) => item !== undefined)
-
     const x = range.e.c - range.s.c + 1
     const y = range.e.r - range.s.r + 1
     return () => (

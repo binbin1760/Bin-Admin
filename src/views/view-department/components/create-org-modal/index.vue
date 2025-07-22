@@ -1,14 +1,17 @@
 <template>
   <n-modal
-    style="width: 480px"
-    v-model:show="showModal"
+    style="width: 600px"
+    v-model:show="show"
     preset="card"
     title="新增部门"
+    :on-esc="onCLoseModalClearModel"
   >
     <AsyncBaseForm
-      :model="model"
-      :config="config"
-      :grid-span="12"
+      ref="asyncBaseForm"
+      :model="depFormModel"
+      :config="depFormConfig"
+      :label-width="80"
+      :grid-span="6"
       :x-gap="10"
       :y-gap="1"
       @cancel="cancelFn"
@@ -19,72 +22,43 @@
 
 <script setup lang="ts">
   import { DepartmentType } from '../../baseType'
-  import { AsyncBaseFormConfig, AsyncBaseForm } from '@/components'
-  type Nullable<T> = {
-    [K in keyof T]?: T[K] | null
-  }
-  const show = defineModel('show', { type: Boolean })
-  const model = reactive<Nullable<DepartmentType>>({
-    departmentId: null,
-    departmentName: null,
-    departmentLeader: null,
-    departmentLevel: null,
-    functional: null
-  })
+  import { AsyncBaseForm } from '@/components'
+  import { addDepartment } from '@/api'
+  import { depStaffStore } from '@/store/modules/departmentAndStaff'
+  import { useDepartmentHook } from '../../useDepartmentHook'
 
-  const showModal = ref(show)
-  //form config
-  const config = ref<Array<AsyncBaseFormConfig>>([
-    {
-      type: 'input',
-      label: '部门名称',
-      path: 'model.departmentName',
-      value: null
-    },
-    {
-      type: 'select',
-      label: '部门领导',
-      path: 'model.departmentLeader',
-      value: null,
-      options: [
-        { label: '张三', value: 'A123' },
-        { label: '李三', value: 'B123' },
-        { label: '王三', value: 'C123' }
-      ]
-    },
-    {
-      type: 'number',
-      label: '部门等级',
-      path: 'model.departmentLevel',
-      value: null
-    },
-    {
-      type: 'select',
-      label: '部门类别',
-      path: 'model.functional',
-      value: null,
-      options: [
-        { label: '财务', value: 'A123' },
-        { label: '职能', value: 'B123' },
-        { label: '运营', value: 'C123' },
-        { label: '综合', value: 'D123' }
-      ]
-    }
-  ])
+  const message = useMessage()
+  const asyncBaseForm = ref<any>(null)
+  const emit = defineEmits(['refresh'])
+  const parentInfo = defineModel('parent', {
+    type: Object as PropType<DepartmentType>
+  })
+  const useDepStaffStore = depStaffStore()
+  const show = defineModel('show', { type: Boolean, default: false })
+  const { depFormConfig, depFormModel } = useDepartmentHook()
 
   function cancelFn(_data: DepartmentType) {
-    showModal.value = false
-  }
-  function confirmFn(_data: DepartmentType) {
-    showModal.value = false
+    show.value = false
   }
 
-  watch(
-    show,
-    (newVal) => {
-      showModal.value = newVal
-    },
-    { immediate: true }
-  )
+  function onCLoseModalClearModel() {
+    show.value = false
+    asyncBaseForm.value?.reSetFormValue()
+  }
+
+  async function confirmFn(_data: Nullable<DepartmentType>) {
+    const parentDep = useDepStaffStore.getCurrentSelectDep
+    _data.parentName = parentDep.depName
+    _data.parentId = parentDep.depId
+    _data.treeLevel = parentDep.treeLevel ? parentDep.treeLevel + 1 : 1
+    if (parentDep.treeLevel !== 0 && !parentDep.treeLevel) {
+      message.error('节点层级异常')
+    } else {
+      const res = await addDepartment(_data as DepartmentType)
+      message.success(res.message)
+      show.value = false
+      emit('refresh')
+    }
+  }
 </script>
 <style scoped lang="less"></style>

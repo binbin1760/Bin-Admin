@@ -1,3 +1,7 @@
+export interface treeSelectBaseType {
+  label: string
+  key: string | number | boolean | null
+}
 export interface AsyncBaseFormConfig {
   type:
     | 'input'
@@ -13,8 +17,11 @@ export interface AsyncBaseFormConfig {
   placeholder?: string
   value?: string | number | boolean | null
   disabled?: boolean
-  options?: { label: string; value: string | number | boolean | null }[]
-  rules?: any[]
+  gridSpan?: number
+  options?: any[]
+  rule?: any
   maxlength?: number
   otherProps?: any
+  valueType?: 'number' | 'array'
+  upadteValue?: (value: any) => void
 }

@@ -1,0 +1,146 @@
+.chat {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  border: 1px solid #d2d2d2;
+  overflow: hidden;
+}
+
+.chat-body {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-history-list {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+  overflow: auto;
+  border-right: 1px solid #d2d2d2;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+.chat-history-list-item {
+  padding: 12px;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.chat-history-list-item-active {
+  background-color: #55babe;
+  color: #ffffff;
+}
+
+.chat-history-list-item:hover {
+  background-color: #55babe;
+  color: #ffffff;
+}
+
+.chat-messageBox {
+  border-radius: 2px;
+  padding: 2px;
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  box-sizing: content-box;
+  margin-top: 16px;
+  padding: 12px;
+}
+
+.chat-messageBox-avatar {
+  border-radius: 9999999px;
+  border: 1px solid #d2d2d2;
+  width: 24px;
+  height: 24px;
+  text-align: center;
+  line-height: 24px;
+  font-size: 24px;
+  color: #55babe;
+}
+.chat-messageBox-message {
+  border-radius: 4px;
+  border: 1px solid #d2d2d2;
+  flex: 1;
+  padding: 12px;
+}
+
+.chat-message-body {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.chat-editmessage-box {
+  border-top: 1px solid #d2d2d2;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-custom-richEdit {
+  flex: 1;
+  padding: 4px;
+  outline: none;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+.chat-custom-richEdit::before {
+  content: '请输入';
+  color: #999999;
+}
+
+.chat-custom-richEdit:empty::before {
+  display: block;
+}
+
+.chat-custom-richEdit:not(:empty)::before {
+  display: none;
+}
+.chat-custom-richEdit:focus::before {
+  display: none;
+}
+
+.chat-editbox-button-list {
+  border-top: 1px solid #d2d2d2;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chat ol,
+.chat ul {
+  padding-left: 0; /* 移除默认 padding */
+  list-style: none; /* 移除默认项目符号 */
+}
+
+/* .chat li {
+  display: flex;
+} */
+.chat li::before {
+  content: ''; /* 自定义项目符号 */
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.chat table {
+  border: 1px solid #d2d2d2;
+  border-collapse: collapse;
+}
+
+.chat tr td {
+  border: 1px solid #d2d2d2;
+}
+
+.chat table th {
+  border: 1px solid #d2d2d2;
+}
