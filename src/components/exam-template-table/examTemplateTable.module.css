@@ -1,0 +1,13 @@
+.examTemplateTable {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.data-table-list {
+  border-top: 1px solid #d9d9d9;
+}
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

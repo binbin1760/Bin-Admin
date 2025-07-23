@@ -4,7 +4,9 @@
     :locale="zhCN"
     :date-locale="dateZhCN"
   >
-    <router-view />
+    <AppProvider>
+      <router-view />
+    </AppProvider>
   </n-config-provider>
 </template>
 
@@ -37,5 +39,12 @@
     --padding-mian-left: 8px;
     --padding-main-right: 8px;
     --main-gap: 4px;
+    --main-border-color: #e0e0e0;
+    --main-border-radius: 4px;
+    --main-border-radius-sm: 2px;
+  }
+  .copy-code-button {
+    height: 20px;
+    line-height: 11px;
   }
 </style>

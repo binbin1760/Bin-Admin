@@ -5,14 +5,23 @@
         class="table"
         :columns="props.columns"
         :data="data"
-        :bordered="true"
+        :render-cell="renderCell"
+        :bordered="false"
+        :single-line="false"
         flex-height
+        v-bind="{ ...props?.otherProps }"
       />
     </div>
     <div class="pageination">
+      <div>
+        共计
+        <span class="data-total">{{ pageination.total }}</span>
+        条
+      </div>
       <n-pagination
-        v-model:page="params.page"
-        :page-count="params.total"
+        v-model:page="pageination.page"
+        :page-count="pageination.total / pageination.pageSize"
+        :page-size="pageination.pageSize"
         size="medium"
         show-quick-jumper
         show-size-picker
@@ -24,9 +33,9 @@
 </template>
 
 <script setup lang="ts">
-  import type { DataTableProps } from 'naive-ui'
+  import type { DataTableProps, DataTableBaseColumn } from 'naive-ui'
   import type { BaseParams } from './types'
-  import { BaseResponse } from '@/unitls/request'
+  import { BaseResponse, Pagination } from '@/unitls/request'
   /**
    * columns 表格配置
    *
@@ -39,41 +48,67 @@
   interface dataTableType {
     columns: Required<DataTableProps>['columns']
     requestApi: (query: any) => Promise<BaseResponse<any>>
-    query: any
+    otherProps?: any
   }
+  const emit = defineEmits(['getTableData'])
+  const query = defineModel('query', { type: Object as PropType<any> })
   const props = defineProps<dataTableType>()
-  const params = reactive<BaseParams>({
-    page: 1,
-    pageSize: 10,
-    total: 1,
-    ...props.query
-  })
-  const data = ref()
 
+  let pageination = ref<Pagination>({
+    page: 1,
+    pageSize: 20,
+    total: 0
+  })
+  let params = reactive<BaseParams>({
+    page: pageination.value.page,
+    pageSize: pageination.value.pageSize,
+    others: query
+  })
+
+  const data = ref()
   async function getDataTableData() {
-    const result = await props.requestApi(params)
+    const { page, pageSize, others } = params
+    const result = await props.requestApi({ page, pageSize, ...others })
     if (result.code === 200) {
       data.value = result.data
+      pageination.value = result.pagination as unknown as Pagination
     } else {
       data.value = []
     }
+    emit('getTableData', data.value)
   }
 
   function unpdatePage(page: number) {
-    params.page = page
+    pageination.value.page = page
   }
 
   function updatePageSize(pageSize: number) {
-    params.pageSize = pageSize
+    pageination.value.pageSize = pageSize
+  }
+  //刷新表格， isCurr 为true时，重置分页
+  function reFresh(isCurr: boolean = false) {
+    if (isCurr) {
+      pageination.value.page = 1
+      pageination.value.pageSize = 20
+      pageination.value.total = 0
+    }
+    getDataTableData()
   }
 
-  watch(
-    params,
-    (_newVal) => {
-      getDataTableData()
-    },
-    { immediate: true }
-  )
+  //render cell
+  function renderCell(value: any, _row: object, column: DataTableBaseColumn) {
+    if (value) {
+      return value
+    } else {
+      return '-'
+    }
+  }
+  defineExpose({
+    reFresh
+  })
+  watchEffect(() => {
+    getDataTableData()
+  })
 </script>
 <style scoped lang="less">
   .base-tabe {
@@ -81,12 +116,18 @@
     flex-direction: column;
     gap: var(--margin-main);
     height: 100%;
+    border: 1px solid rgba(239, 239, 245, 1);
     .table {
       height: 100%;
     }
     .pageination {
       display: flex;
+      gap: var(--margin-main);
       justify-content: flex-end;
+      align-items: center;
+      .data-total {
+        color: var(--main-color);
+      }
     }
   }
 </style>

@@ -6,6 +6,10 @@
       :model="props.model"
       :label-width="props.labelWidth ? labelWidth : 80"
       :label-align="props.labelAlign ? props.labelAlign : 'right'"
+      :require-mark-placement="
+        props.requireMarkPlacement ? props.requireMarkPlacement : 'left'
+      "
+      :disabled="props.disabled"
     >
       <n-grid
         :cols="props.cols ? props.cols : 12"
@@ -13,61 +17,92 @@
         :y-gap="props.yGap ? props.yGap : 24"
       >
         <template
-          v-for="(item, index) in props.config"
+          v-for="(item, index) in config"
           :key="index"
         >
           <n-form-item-gi
             :label="item.label"
-            :span="props.gridSpan ? props.gridSpan : 12"
+            :span="item.gridSpan ? item.gridSpan : 12"
             :path="item.path"
+            :rule="item.rule"
           >
             <n-input
               v-if="item.type === 'input'"
-              v-model:value="item.value"
+              v-model:value="formData[item.path]"
               :placeholder="item.placeholder"
               :disabled="item.disabled"
+              v-on:update:value="
+                (value: string) => {
+                  item.upadteValue && item.upadteValue(value)
+                }
+              "
               v-bind="{ ...item.otherProps }"
             />
 
             <n-select
               v-else-if="item.type === 'select'"
-              v-model:value="item.value"
+              v-model:value="formData[item.path]"
               :options="item.options"
               :disabled="item.disabled"
               :placeholder="item.placeholder"
               v-bind="{ ...item.otherProps }"
+              @update-value="
+                (value: string, option: SelectOption) => {
+                  item.upadteValue && item.upadteValue({ value, option })
+                }
+              "
             ></n-select>
 
             <n-input
               v-else-if="item.type === 'textarea'"
               type="textarea"
-              v-model:value="item.value"
+              v-model:value="formData[item.path]"
               :disabled="item.disabled"
               :placeholder="item.placeholder"
               :maxlength="item.maxlength"
+              v-on:update:value="
+                (value: string) => {
+                  item.upadteValue && item.upadteValue(value)
+                }
+              "
               v-bind="{ ...item.otherProps }"
             />
             <n-input-number
               id="input-number"
               style="width: 100%"
               v-else-if="item.type === 'number'"
-              v-model:value="item.value"
+              v-model:value="formData[item.path]"
               :disabled="item.disabled"
               :placeholder="item.placeholder"
+              @update:value="
+                (value: number) => {
+                  item.upadteValue && item.upadteValue(value)
+                }
+              "
               v-bind="{ ...item.otherProps }"
             />
             <n-date-picker
               v-else-if="item.type === 'date'"
-              v-model:value="item.value"
+              v-model:value="formData[item.path]"
               :disabled="item.disabled"
               :placeholder="item.placeholder"
+              @update:value="
+                (value: Number | null, formatData: string | null) => {
+                  item.upadteValue && item.upadteValue({ value, formData })
+                }
+              "
               v-bind="{ ...item.otherProps }"
             />
             <n-checkbox-group
               v-else-if="item.type === 'checkbox'"
-              v-model:value="item.value"
+              v-model:value="formData[item.path]"
               :disabled="item.disabled"
               v-bind="{ ...item.otherProps }"
+              @update:value="
+                (value: Array<string | number>, meta) => {
+                  item.upadteValue && item.upadteValue({ value, meta })
+                }
+              "
             >
               <n-checkbox
                 v-for="(check, checkIndex) in item.options"
@@ -76,11 +111,46 @@
                 :label="check.label"
               />
             </n-checkbox-group>
+            <n-radio-group
+              v-else-if="item.type === 'radio'"
+              v-model:value="formData[item.path]"
+              :disabled="item.disabled"
+              v-bind="{ ...item.otherProps }"
+              @update:value="
+                (value: Array<string | number>, meta) => {
+                  item.upadteValue && item.upadteValue({ value, meta })
+                }
+              "
+            >
+              <n-radio
+                v-for="(radio, radioIndex) in item.options"
+                :value="radio.value"
+                :key="radioIndex"
+              >
+                {{ radio.label }}
+              </n-radio>
+            </n-radio-group>
+            <n-tree-select
+              v-else-if="item.type === 'tree-select'"
+              v-model:value="formData[item.path]"
+              :disabled="item.disabled"
+              :placeholder="item.placeholder"
+              :options="item.options"
+              @update-value="
+                (value, option, meta) => {
+                  item.upadteValue && item.upadteValue({ value, option, meta })
+                }
+              "
+              v-bind="{ ...item.otherProps }"
+            ></n-tree-select>
           </n-form-item-gi>
         </template>
       </n-grid>
     </n-form>
-    <div class="foot">
+    <div
+      class="foot"
+      v-if="props.showFoot"
+    >
       <n-button
         type="default"
         @click="cancelForm"
@@ -89,7 +159,7 @@
       </n-button>
       <n-button
         type="info"
-        @click="configForm"
+        @click="confirmForm"
       >
         确 认
       </n-button>
@@ -101,25 +171,67 @@
   // @ts-nocheck
   import { it } from 'node:test'
   import { AsyncBaseFormConfig } from './types'
-  const props = defineProps<{
-    config: Array<AsyncBaseFormConfig>
-    model: any
-    labelWidth?: number
-    labelAlign?: 'left' | 'right'
-    gridSpan?: number
-    xGap?: number
-    yGap?: number
-    cols?: number
-  }>()
+  //config的path目前只支持第一层，无法获取对象中对象的值
+  const props = withDefaults(
+    defineProps<{
+      config: Array<AsyncBaseFormConfig>
+      model: any
+      labelWidth?: number
+      labelAlign?: 'left' | 'right'
+      requireMarkPlacement?: 'left' | 'right'
+      gridSpan?: number
+      xGap?: number
+      yGap?: number
+      cols?: number
+      disabled?: boolean
+      showFoot?: boolean
+    }>(),
+    {
+      showFoot: true
+    }
+  )
+
   const emit = defineEmits(['cancel', 'confirm'])
-
+  const formData = ref<any>(props.model)
+  const formRef = ref<any>(null)
+  const config = ref(props.config)
   function cancelForm() {
-    emit('cancel', props.config)
+    reSetFormValue()
+    emit('cancel')
   }
 
-  function configForm() {
-    emit('confirm', props.config)
+  function confirmForm() {
+    formRef.value?.validate((errors) => {
+      if (!errors) {
+        emit('confirm', formData.value)
+      }
+    })
   }
+
+  //to reset FormComponent value
+  function reSetFormValue() {
+    formRef.value?.restoreValidation()
+    const pathArr = props.config.map((item) => item.path)
+    if (Array.isArray(pathArr) && pathArr.length > 0) {
+      pathArr.forEach((path) => {
+        formData.value[path] = null
+      })
+    }
+  }
+  defineExpose({
+    reSetFormValue,
+    formRef
+  })
+  watch(
+    () => props.config,
+    (newVal) => {
+      config.value = newVal
+    },
+    {
+      immediate: true,
+      deep: true
+    }
+  )
 </script>
 <style scoped lang="less">
   .foot {

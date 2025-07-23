@@ -1,83 +1,60 @@
 <template>
   <n-modal
-    v-model:show="showModal"
-    style="width: 480px"
+    v-model:show="show"
+    style="width: 700px"
     preset="card"
     title="新增员工"
+    ::on-esc="onCLoseModalClearModel"
   >
     <AsyncBaseForm
-      :model="model"
-      :config="config"
-      :grid-span="12"
+      ref="asyncBaseForm"
+      :model="userFormModel"
+      :config="userFormConfig"
+      :grid-span="6"
       :x-gap="10"
       :y-gap="1"
-      @cancel="cancelFn"
+      :label-width="110"
       @confirm="confirmFn"
+      @cancel="cancelFn"
     />
   </n-modal>
 </template>
 
 <script setup lang="ts">
   import { StaffType } from '../../baseType'
-  import { AsyncBaseFormConfig, AsyncBaseForm } from '@/components'
-  type Nullable<T> = {
-    [K in keyof T]?: T[K] | null
-  }
-  const show = defineModel('show', { type: Boolean })
-  const model = reactive<Nullable<StaffType>>({
-    name: null,
-    position: null,
-    phone: null,
-    rank: null
-  })
+  import { AsyncBaseForm } from '@/components'
+  import { useDepartmentHook } from '../../useDepartmentHook'
+  import { depStaffStore } from '@/store/modules/departmentAndStaff'
+  import { addUser } from '@/api'
 
-  const showModal = ref(show)
-  //form config
-  const config = ref<Array<AsyncBaseFormConfig>>([
-    {
-      type: 'input',
-      label: '员工名称',
-      path: 'model.name',
-      value: null
-    },
-    {
-      type: 'select',
-      label: '员工职位',
-      path: 'model.position',
-      value: null,
-      options: [
-        { label: '张三', value: 'A123' },
-        { label: '李三', value: 'B123' },
-        { label: '王三', value: 'C123' }
-      ]
-    },
-    {
-      type: 'number',
-      label: '联系方式',
-      path: 'model.phone',
-      value: null
-    },
-    {
-      type: 'number',
-      label: '职级',
-      path: 'model.rank',
-      value: null
+  const { userFormModel, userFormConfig } = useDepartmentHook()
+  const message = useMessage()
+  const emit = defineEmits(['refreshTable'])
+  const asyncBaseForm = ref<any>()
+  const show = defineModel('show', { type: Boolean, default: false })
+  const useDepStaffStore = depStaffStore()
+
+  function onCLoseModalClearModel() {
+    show.value = false
+    asyncBaseForm.value?.reSetFormValue()
+  }
+
+  async function confirmFn(_data: StaffType) {
+    const parentDep = useDepStaffStore.getCurrentSelectDep
+    if (parentDep.depId && parentDep.depName) {
+      _data.department = parentDep.depName
+      _data.departmentId = parentDep.depId
+      const res = await addUser(_data)
+      message.info(res.message)
+      if (res.code === 200) {
+        show.value = false
+        emit('refreshTable')
+      }
     }
-  ])
-
-  function cancelFn(_data: StaffType) {
-    showModal.value = false
-  }
-  function confirmFn(_data: StaffType) {
-    showModal.value = false
   }
 
-  watch(
-    show,
-    (newVal) => {
-      showModal.value = newVal
-    },
-    { immediate: true }
-  )
+  function cancelFn() {
+    show.value = false
+  }
 </script>
 <style scoped lang="less"></style>

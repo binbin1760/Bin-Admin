@@ -8,7 +8,7 @@ import vueJsxPlugin from '@vitejs/plugin-vue-jsx'
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, command }) => {
   const env = loadEnv(mode, process.cwd())
-  const { VITE_BASE_API } = env
+  const { VITE_BASE_API, VITE_BASE_WS } = env
 
   return {
     plugins: [
@@ -28,8 +28,12 @@ export default defineConfig(({ mode, command }) => {
           'vue-router',
           'pinia'
         ],
+        dirs: ['./src/hooks/use*.ts'],
         dts: 'src/dts/auto-import.d.ts',
-        include: [/\.vue$/, /\.vue\?vue/, /\.md$/]
+        include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+        eslintrc: {
+          enabled: true
+        }
       }),
       Components({
         resolvers: [NaiveUiResolver()],
@@ -57,6 +61,12 @@ export default defineConfig(({ mode, command }) => {
         '/api': {
           target: VITE_BASE_API,
           changeOrigin: true
+        },
+        '/ws': {
+          target: VITE_BASE_WS,
+          changeOrigin: true,
+          ws: true,
+          rewrite: (path) => path.replace(/^\/ws/, '')
         }
       }
     }

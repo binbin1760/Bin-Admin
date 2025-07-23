@@ -90,5 +90,8 @@ export const naiveComponentStyle: GlobalThemeOverrides = {
   },
   Tag: {
     colorInfo: '#1FA3E5FF'
+  },
+  Tree: {
+    nodeColorActive: '#55BABE' //节点激活时的背景颜色
   }
 }

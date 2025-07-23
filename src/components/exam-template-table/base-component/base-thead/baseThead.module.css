@@ -1,0 +1,17 @@
+.base-thead {
+  color: #333333;
+}
+
+.base-th {
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  padding: 8px;
+}
+
+.base-thead-tr {
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  font-size: 12px;
+  background-color: #fafafc;
+}

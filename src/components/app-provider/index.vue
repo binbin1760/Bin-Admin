@@ -9,22 +9,22 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import {
-  NDialogProvider,
-  NNotificationProvider,
-  NMessageProvider,
-} from "naive-ui";
-
-export default defineComponent({
-  name: "Application",
-  components: {
+  import { defineComponent } from 'vue'
+  import {
     NDialogProvider,
     NNotificationProvider,
-    NMessageProvider,
-  },
-  setup() {
-    return {};
-  },
-});
+    NMessageProvider
+  } from 'naive-ui'
+
+  export default defineComponent({
+    name: 'Application',
+    components: {
+      NDialogProvider,
+      NNotificationProvider,
+      NMessageProvider
+    },
+    setup() {
+      return {}
+    }
+  })
 </script>
