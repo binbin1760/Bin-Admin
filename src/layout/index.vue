@@ -34,7 +34,11 @@
           <TagViews />
         </n-layout-header>
         <n-layout-content content-style="padding: 12px;">
-          <RouterView></RouterView>
+          <router-view v-slot="{ Component }">
+            <transition enter-active-class="animate__animated animate__fadeIn">
+              <component :is="Component" />
+            </transition>
+          </router-view>
         </n-layout-content>
       </n-layout>
     </n-layout>

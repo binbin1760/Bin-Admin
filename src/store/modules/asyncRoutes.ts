@@ -3,6 +3,7 @@ import { asyncRoutes } from '@/router/index'
 import { RouteRecordRaw } from 'vue-router'
 import { store } from '../index'
 import { menuType } from '@/api'
+import type { TreeSelectOption } from 'naive-ui'
 export interface RootMenu {
   path: string
   name: string
@@ -52,6 +53,24 @@ function accaccordingToAsyncRoutesUpdateLocalRoutes(
   }
 }
 
+function accaccordingToAsyncRoutesGenerateTreeSelectOptions(
+  data: RouteRecordRaw[]
+): Array<TreeSelectOption> {
+  return data.map((item) => {
+    const treeNode: TreeSelectOption = {
+      label: item.meta?.name as unknown as string,
+      key: item.path,
+      nodeData: item
+    }
+    if (item.children && item.children.length > 0) {
+      treeNode.children = accaccordingToAsyncRoutesGenerateTreeSelectOptions(
+        item.children
+      )
+    }
+    return treeNode
+  })
+}
+
 export const useAsyncRouteStore = defineStore({
   id: 'app-sync-route',
   state: (): asyncRoutesType => ({
@@ -69,6 +88,12 @@ export const useAsyncRouteStore = defineStore({
     },
     getCurrentEditMenu(): RouteRecordRaw | undefined {
       return this.currentEditMenu
+    },
+    getTreeSelectOptions(): Array<TreeSelectOption> {
+      //this computed property returns a list of options for a tree select component  and nodeData is the tree node of the asyncRoute tree
+      return accaccordingToAsyncRoutesGenerateTreeSelectOptions(
+        this.localRoutes
+      )
     }
   },
   actions: {

@@ -1,4 +1,5 @@
-import MenuEdit from './menu-edit/index.vue'
+import AddMenu from '../components/add-menu/index.vue'
+import EditMenu from '../components/edit-menu/index.vue'
 
-export { MenuEdit }
+export { AddMenu, EditMenu }
 export * from '../components'

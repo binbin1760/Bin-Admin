@@ -2,6 +2,13 @@ export interface treeSelectBaseType {
   label: string
   key: string | number | boolean | null
 }
+
+export interface baseRule {
+  required: boolean
+  message: string
+  trigger: Array<string>
+  type?: string
+}
 export interface AsyncBaseFormConfig {
   type:
     | 'input'
@@ -19,7 +26,7 @@ export interface AsyncBaseFormConfig {
   disabled?: boolean
   gridSpan?: number
   options?: any[]
-  rule?: any
+  rule?: baseRule
   maxlength?: number
   otherProps?: any
   valueType?: 'number' | 'array'

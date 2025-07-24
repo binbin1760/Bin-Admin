@@ -28,7 +28,7 @@ export default defineConfig(({ mode, command }) => {
           'vue-router',
           'pinia'
         ],
-        dirs: ['./src/hooks/use*.ts'],
+        dirs: ['./src/hooks/use*.ts', './src/store/modules/*.ts'],
         dts: 'src/dts/auto-import.d.ts',
         include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
         eslintrc: {

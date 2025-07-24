@@ -1,4 +1,5 @@
 import { BaseResponse, request } from '@/unitls'
+import { BaseUser } from '@/views/view-permissions/baseType'
 
 export interface menuType {
   id?: string
@@ -42,5 +43,17 @@ export function getSideMenuList(): Promise<BaseResponse<menuType[]>> {
   return request({
     url: '/api/get/sidemenu',
     method: 'get'
+  })
+}
+
+export function getUserManageList(query: {
+  page: number
+  pageSize: number
+  depId?: string
+}): Promise<BaseResponse<BaseUser[]>> {
+  return request({
+    url: '/api/get/user/manage/list',
+    method: 'get',
+    params: query
   })
 }

@@ -52,6 +52,9 @@ export const useDepartmentHook = () => {
       gridSpan: 6,
       path: 'code',
       value: null,
+      otherProps: {
+        'show-button': false
+      },
       rule: {
         type: 'number',
         required: true,
@@ -292,6 +295,9 @@ export const useDepartmentHook = () => {
         path: 'code',
         value: null,
         gridSpan: 6,
+        otherProps: {
+          'show-button': false
+        },
         rule: {
           type: 'number',
           required: true,
@@ -305,6 +311,9 @@ export const useDepartmentHook = () => {
         path: 'companyTenure',
         value: null,
         gridSpan: 6,
+        otherProps: {
+          'show-button': false
+        },
         rule: {
           type: 'number',
           required: true,
@@ -479,7 +488,7 @@ export const useDepartmentHook = () => {
           type: 'number',
           required: true,
           message: '未设置员工身份',
-          trigger: ['trigger', 'chenge']
+          trigger: ['blur', 'change']
         },
         options: [
           { label: '正式员工', value: IDENTITY.IDENTITY_1 },
@@ -508,7 +517,7 @@ export const useDepartmentHook = () => {
         gridSpan: 6,
         options: [initData.value],
         rule: {
-          require: true,
+          required: true,
           message: '请选择直属上级',
           trigger: ['blur']
         },

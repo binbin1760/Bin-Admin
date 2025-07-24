@@ -102,6 +102,16 @@
     "request": true,
     "saveTopDep": true,
     "saveUserInfo": true,
-    "saveUserTagHistory": true
+    "saveUserTagHistory": true,
+    "depStaff": true,
+    "depStaffStore": true,
+    "indiactoryLibrary": true,
+    "indicatoryLibraryStore": true,
+    "systemStyleStting": true,
+    "useAsyncRoute": true,
+    "useAsyncRouteStore": true,
+    "useSystemStyleSettingStore": true,
+    "useTagViews": true,
+    "useTagViewsStore": true
   }
 }
