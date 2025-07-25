@@ -9,36 +9,17 @@
       title="菜单配置"
       closable
     >
-      <div class="edit-menu-button">
-        <div class="edit-menu-form">
-          <AsyncBaseForm
-            ref="asyncBaseForm"
-            :model="data"
-            :config="menuFormConfig"
-            :cols="6"
-            :x-gap="10"
-            :y-gap="1"
-            :label-width="110"
-            :show-foot="false"
-            @confirm="confirmFn"
-          />
-          <n-button type="info">确认</n-button>
-        </div>
-        <n-divider />
-        <div class="add-btn-form">
-          <AsyncBaseForm
-            :model="buttonModel"
-            :config="buttonFormConfig"
-            :cols="6"
-            :x-gap="10"
-            :y-gap="1"
-            :label-width="110"
-            :show-foot="false"
-            @confirm="confirmFn"
-          />
-          <n-button type="info">确认</n-button>
-        </div>
-      </div>
+      <AsyncBaseForm
+        ref="asyncBaseForm"
+        :model="data"
+        :config="menuFormConfig"
+        :cols="6"
+        :x-gap="10"
+        :y-gap="1"
+        :label-width="110"
+        @confirm="confirmFn"
+        @cancel="cancel"
+      />
     </n-drawer-content>
   </n-drawer>
 </template>
@@ -52,11 +33,14 @@
   const data = defineModel('data', { type: Object })
   const emit = defineEmits(['refresh'])
 
-  const { menuFormConfig, buttonModel, buttonFormConfig } = useMenuHook()
+  const { menuFormConfig } = useMenuHook()
   const asyncBaseForm = ref()
   function confirmFn(_data: BaseMenu) {
     console.log(_data)
     emit('refresh')
+  }
+  function cancel() {
+    show.value = false
   }
 </script>
 <style scoped lang="less">

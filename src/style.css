@@ -52,3 +52,7 @@
   --padding-main-right: 8px;
   --main-gap: 4px;
 } */
+/* naive ui 文本高亮组件专用类 */
+.naive-ui-high-light {
+  background: #ff4d4f;
+}

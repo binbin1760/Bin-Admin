@@ -3,8 +3,12 @@ import { useAsyncRouteStore } from '@/store/modules/asyncRoutes'
 import { AsyncBaseFormConfig } from '@/components'
 import { ref } from 'vue'
 
-export const useMenuHook = () => {
+export const useMenuHook = (
+  buttonNamePattern?: (name: string) => void,
+  buttonCodePattern?: (code: string) => void
+) => {
   const useAsyncRoute = useAsyncRouteStore()
+
   //菜单配置
   const menuEditModel = ref<Nullable<BaseMenu>>({
     name: '',
@@ -158,6 +162,9 @@ export const useMenuHook = () => {
         required: true,
         message: '请输入按钮名称',
         trigger: ['blur']
+      },
+      upadteValue: (value) => {
+        buttonNamePattern && buttonNamePattern(value)
       }
     },
     {
@@ -169,6 +176,9 @@ export const useMenuHook = () => {
         required: true,
         message: '请输入权限编码',
         trigger: ['blur']
+      },
+      upadteValue: (value) => {
+        buttonCodePattern && buttonCodePattern(value)
       }
     },
     {

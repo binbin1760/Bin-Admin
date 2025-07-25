@@ -40,6 +40,14 @@
       v-model:show="showEditModal"
       v-model:data="editMenuData"
     />
+    <ConfigButton
+      v-model:show="showButtonConfig"
+      v-model:data="editMenuData"
+    />
+    <ViewButton
+      v-model:show="showMenuButtonView"
+      v-model:path="showMenuButtonQueryPath"
+    />
   </div>
 </template>
 
@@ -49,7 +57,7 @@
   import { asyncRoutes } from '@/router/index'
   import { SearchOutlined } from '@vicons/antd'
   import styles from '../common.module.css'
-  import { AddMenu, EditMenu } from './components'
+  import { AddMenu, EditMenu, ConfigButton, ViewButton } from './components'
   import { BaseMenu } from '../baseType'
   const data = ref<RouteRecordRaw[]>(asyncRoutes)
 
@@ -57,6 +65,9 @@
   const showAddModal = ref<boolean>(false)
   const showEditModal = ref<boolean>(false)
   const editMenuData = ref<BaseMenu>()
+  const showButtonConfig = ref<boolean>(false)
+  const showMenuButtonView = ref<boolean>(false)
+  const showMenuButtonQueryPath = ref<string>()
   const rowKey = (row: RouteRecordRaw) => row.path
   const columns: DataTableColumns<RouteRecordRaw> = [
     {
@@ -125,7 +136,6 @@
             size: 'small',
             onClick: () => {
               const deepCloneData = JSON.parse(JSON.stringify(row))
-              console.log(deepCloneData)
               showEditModal.value = true
               editMenuData.value = deepCloneData
             }
@@ -145,12 +155,38 @@
           { default: () => '删除' }
         )
 
+        const editButton = h(
+          NButton,
+          {
+            type: 'warning',
+            size: 'small',
+            onClick: () => {
+              const deepClone = JSON.parse(JSON.stringify(row))
+              editMenuData.value = deepClone
+              showButtonConfig.value = true
+            }
+          },
+          { default: () => '按钮设置' }
+        )
+
         const btns = h(
           NButton,
-          { type: 'primary', size: 'small' },
-          { default: () => '按钮' }
+          {
+            type: 'primary',
+            size: 'small',
+            onClick: () => {
+              showMenuButtonView.value = true
+              showMenuButtonQueryPath.value = row.path
+            }
+          },
+          { default: () => '页面按钮' }
         )
-        return h('div', { class: styles['table-operate'] }, [btns, edit, del])
+        return h('div', { class: styles['table-operate'] }, [
+          btns,
+          editButton,
+          edit,
+          del
+        ])
       }
     }
   ]
