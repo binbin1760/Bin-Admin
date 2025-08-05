@@ -112,6 +112,8 @@
     "useAsyncRouteStore": true,
     "useSystemStyleSettingStore": true,
     "useTagViews": true,
-    "useTagViewsStore": true
+    "useTagViewsStore": true,
+    "NButton": true,
+    "NTag": true
   }
 }

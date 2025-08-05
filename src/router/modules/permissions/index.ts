@@ -7,7 +7,7 @@ const routes: Array<RouteRecordRaw> = [
       name: '权限管理',
       sort: 4
     },
-    redirect: '/permission/button',
+    redirect: '/permission/userManage',
     component: () => import('@/layout/index.vue'),
     children: [
       {

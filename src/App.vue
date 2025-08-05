@@ -39,7 +39,7 @@
     --padding-mian-left: 8px;
     --padding-main-right: 8px;
     --main-gap: 4px;
-    --main-border-color: #e0e0e0;
+    --main-border-color: #efeff5;
     --main-border-radius: 4px;
     --main-border-radius-sm: 2px;
   }

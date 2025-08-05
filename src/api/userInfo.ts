@@ -48,13 +48,17 @@ export function deleteUserById(id: string): Promise<BaseResponse<null>> {
 }
 
 export function editUserInfo(data: StaffType) {
-  if (data.agentTime) {
-    data.agentStartTime = data.agentTime[0]
-    data.agentEndTime = data.agentTime[1]
+  const { agentTime, ...rest } = data
+  if (agentTime && agentTime[0] && agentTime[1]) {
+    rest.agentStartTime = data.agentTime[0]
+    rest.agentEndTime = data.agentTime[1]
+  } else {
+    rest.agentStartTime = undefined
+    rest.agentEndTime = undefined
   }
   return request({
     url: '/api/update/user',
     method: 'post',
-    data
+    data: rest
   })
 }

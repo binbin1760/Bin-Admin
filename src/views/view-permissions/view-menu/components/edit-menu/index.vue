@@ -28,16 +28,24 @@
   import { BaseMenu } from '@/views/view-permissions/baseType'
   import { useMenuHook } from '../../useMenuHook'
   import { AsyncBaseForm } from '@/components'
+  import { editOrAddSidemenu } from '@/api'
 
+  const message = useMessage()
   const show = defineModel('show', { type: Boolean, default: false })
   const data = defineModel('data', { type: Object })
   const emit = defineEmits(['refresh'])
 
   const { menuFormConfig } = useMenuHook()
   const asyncBaseForm = ref()
-  function confirmFn(_data: BaseMenu) {
-    console.log(_data)
-    emit('refresh')
+  async function confirmFn(_data: BaseMenu) {
+    const res = await editOrAddSidemenu(_data)
+    if (res.code === 200) {
+      message.success(res.message)
+      show.value = false
+      emit('refresh')
+    } else {
+      message.error(res.message)
+    }
   }
   function cancel() {
     show.value = false

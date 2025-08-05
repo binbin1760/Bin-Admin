@@ -2,15 +2,15 @@ import { defineStore } from 'pinia'
 import { asyncRoutes } from '@/router/index'
 import { RouteRecordRaw } from 'vue-router'
 import { store } from '../index'
-import { menuType } from '@/api'
 import type { TreeSelectOption } from 'naive-ui'
+import { BaseMenu } from '@/views/view-permissions/baseType'
 export interface RootMenu {
   path: string
   name: string
 }
 export interface asyncRoutesType {
   localRoutes: RouteRecordRaw[]
-  asyncRoutes: menuType[]
+  asyncRoutes: BaseMenu[]
   currentAddMenu?: RootMenu
   currentEditMenu?: RouteRecordRaw
 }
@@ -36,30 +36,14 @@ function findRoutesByPath(
 
   return matchedRoutes
 }
-function accaccordingToAsyncRoutesUpdateLocalRoutes(
-  localRoutes: RouteRecordRaw[],
-  asyncRoutes: menuType[]
-) {
-  for (const route of localRoutes) {
-    const asyncRoute = asyncRoutes.filter((item) => item.path === route.path)[0]
-    if (asyncRoute) {
-      route.meta = asyncRoute?.meta
-      route.path = asyncRoute?.path ? asyncRoute.path : route.path
-      route.redirect = asyncRoute?.redirect
-    }
-    if (route.children && route.children.length > 0) {
-      accaccordingToAsyncRoutesUpdateLocalRoutes(route.children, asyncRoutes)
-    }
-  }
-}
 
 function accaccordingToAsyncRoutesGenerateTreeSelectOptions(
-  data: RouteRecordRaw[]
+  data: BaseMenu[]
 ): Array<TreeSelectOption> {
   return data.map((item) => {
     const treeNode: TreeSelectOption = {
-      label: item.meta?.name as unknown as string,
-      key: item.path,
+      label: item.name,
+      key: item.id,
       nodeData: item
     }
     if (item.children && item.children.length > 0) {
@@ -71,28 +55,25 @@ function accaccordingToAsyncRoutesGenerateTreeSelectOptions(
   })
 }
 
+/***
+ *  没必要更具后端菜单数据更新本地路由数据
+ *  侧栏菜单直接用后端数据进行渲染
+ *  权限校验直接在路由守卫中
+ */
 export const useAsyncRouteStore = defineStore({
   id: 'app-sync-route',
   state: (): asyncRoutesType => ({
     localRoutes: asyncRoutes,
-    currentAddMenu: undefined,
-    currentEditMenu: undefined,
-    asyncRoutes: []
+    asyncRoutes: [] //后端菜单数据
   }),
   getters: {
     getAsyncRoutes(): RouteRecordRaw[] {
       return this.localRoutes
     },
-    getCurrentAddMenu(): RootMenu | undefined {
-      return this.currentAddMenu
-    },
-    getCurrentEditMenu(): RouteRecordRaw | undefined {
-      return this.currentEditMenu
-    },
     getTreeSelectOptions(): Array<TreeSelectOption> {
       //this computed property returns a list of options for a tree select component  and nodeData is the tree node of the asyncRoute tree
       return accaccordingToAsyncRoutesGenerateTreeSelectOptions(
-        this.localRoutes
+        this.asyncRoutes
       )
     }
   },
@@ -109,9 +90,8 @@ export const useAsyncRouteStore = defineStore({
     getCurrentEditMenuId(path: string) {
       return this.asyncRoutes.filter((item) => item.path === path)[0]?.id
     },
-    setAsyncRoutes(data: menuType[]) {
+    setAsyncRoutes(data: BaseMenu[]) {
       this.asyncRoutes = data
-      accaccordingToAsyncRoutesUpdateLocalRoutes(this.localRoutes, data)
     }
   }
 })

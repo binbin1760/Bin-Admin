@@ -32,13 +32,16 @@
         :columns="columns"
         :data="data"
         :row-key="rowKey"
-        :on-update:checked-row-keys="getSelectedData"
       />
     </div>
-    <AddMenu v-model:show="showAddModal" />
+    <AddMenu
+      v-model:show="showAddModal"
+      @refresh="getAllSideMenu"
+    />
     <EditMenu
       v-model:show="showEditModal"
       v-model:data="editMenuData"
+      @refresh="getAllSideMenu"
     />
     <ConfigButton
       v-model:show="showButtonConfig"
@@ -52,15 +55,19 @@
 </template>
 
 <script setup lang="ts">
-  import { NButton, type DataTableColumns } from 'naive-ui'
-  import { RouteRecordRaw } from 'vue-router'
-  import { asyncRoutes } from '@/router/index'
+  import { NButton, NHighlight, type DataTableColumns } from 'naive-ui'
   import { SearchOutlined } from '@vicons/antd'
   import styles from '../common.module.css'
   import { AddMenu, EditMenu, ConfigButton, ViewButton } from './components'
   import { BaseMenu } from '../baseType'
-  const data = ref<RouteRecordRaw[]>(asyncRoutes)
+  import { getSideMenuList, deleteMenuById } from '@/api'
+  import { useAsyncRouteStore } from '@/store/modules/asyncRoutes'
 
+  const useAsycRoutes = useAsyncRouteStore()
+  const dialog = useDialog()
+  const message = useMessage()
+
+  const data = ref<BaseMenu[]>()
   const searchMenu = ref<string>('')
   const showAddModal = ref<boolean>(false)
   const showEditModal = ref<boolean>(false)
@@ -68,14 +75,16 @@
   const showButtonConfig = ref<boolean>(false)
   const showMenuButtonView = ref<boolean>(false)
   const showMenuButtonQueryPath = ref<string>()
-  const rowKey = (row: RouteRecordRaw) => row.path
-  const columns: DataTableColumns<RouteRecordRaw> = [
+  const rowKey = (row: BaseMenu) => row.id
+  const columns: DataTableColumns<BaseMenu> = [
     {
-      type: 'selection'
+      title: '序号',
+      key: 'sort',
+      align: 'center'
     },
     {
       title: '菜单名称',
-      key: 'meta.name',
+      key: 'name',
       align: 'center'
     },
     {
@@ -93,11 +102,7 @@
       key: 'meta.hidden',
       align: 'center',
       render(row) {
-        return h(
-          'span',
-          {},
-          { default: () => (row.meta && row.meta.hidden ? '是' : '否') }
-        )
+        return h('span', {}, { default: () => (row.hidden ? '是' : '否') })
       }
     },
     {
@@ -105,11 +110,7 @@
       key: 'meta.isRoot',
       align: 'center',
       render(row) {
-        return h(
-          'span',
-          {},
-          { default: () => (row.meta && row.meta.isRoot ? '是' : '否') }
-        )
+        return h('span', {}, { default: () => (row.isRoot ? '是' : '否') })
       }
     },
     {
@@ -117,11 +118,7 @@
       key: 'meta.affix',
       align: 'center',
       render(row) {
-        return h(
-          'span',
-          {},
-          { default: () => (row.meta && row.meta.affix ? '需要' : '不需要') }
-        )
+        return h('span', {}, { default: () => (row.affix ? '需要' : '不需要') })
       }
     },
     {
@@ -149,7 +146,26 @@
             type: 'error',
             size: 'small',
             onClick: () => {
-              console.log('删除', row)
+              const content =
+                row.children && row.children.length > 0
+                  ? `菜单${row.name}含有子菜单以及与其相关联的按钮，请确认是否一并删除?`
+                  : `请确认是否删除${row.name}以及与其相关联的按钮?`
+              const hightTextVnode = h(NHighlight, {
+                text: content,
+                patterns: [row.name, '其相关联的按钮'],
+                highlightTag: 'span',
+                highlightClass: 'hight-delet-wargining'
+              })
+              dialog.warning({
+                title: '危险操作',
+                content: () => hightTextVnode,
+                positiveText: '删除',
+                negativeText: '取消',
+                draggable: false,
+                onPositiveClick: () => {
+                  deleMenu(row.id)
+                }
+              })
             }
           },
           { default: () => '删除' }
@@ -190,20 +206,23 @@
       }
     }
   ]
-  function getSelectedData(
-    keys: Array<string | number>,
-    rows: object[],
-    meta: {
-      row: object | undefined
-      action: 'check' | 'uncheck' | 'checkAll' | 'uncheckAll'
-    }
-  ) {
-    console.log(keys, rows)
-  }
-
   function addMenuModal() {
     showAddModal.value = true
   }
+  async function getAllSideMenu() {
+    const res = await getSideMenuList()
+    if (res.code === 200) {
+      data.value = res.data
+      useAsycRoutes.setAsyncRoutes(res.data)
+    }
+  }
+
+  async function deleMenu(id: string) {
+    const res = await deleteMenuById(id)
+    message.info(res.message)
+    getAllSideMenu()
+  }
+  getAllSideMenu()
 </script>
 <style scoped lang="less">
   .permission-menu {

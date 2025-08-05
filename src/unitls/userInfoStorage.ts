@@ -24,6 +24,10 @@ export function getUserInfo(): userInfoType {
     : { token: null, department: null, departmentId: null, treeLevel: null }
 }
 
+export function clearUserInfo() {
+  localStorage.removeItem('user')
+}
+
 //缓存tag view 浏览记录
 export function saveUserTagHistory(tagList: tagType[]) {
   localStorage.setItem('tagList', JSON.stringify(tagList))

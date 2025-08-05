@@ -6,6 +6,8 @@
 export {}
 declare global {
   const EffectScope: typeof import('vue')['EffectScope']
+  const NButton: typeof import('naive-ui')['NButton']
+  const NTag: typeof import('naive-ui')['NTag']
   const acceptHMRUpdate: typeof import('pinia')['acceptHMRUpdate']
   const clickCopy: typeof import('../unitls/base')['clickCopy']
   const computed: typeof import('vue')['computed']

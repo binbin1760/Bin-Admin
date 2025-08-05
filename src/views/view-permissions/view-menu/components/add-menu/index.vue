@@ -5,6 +5,7 @@
     preset="card"
     title="新增菜单"
     :on-esc="onCLoseModalClearModel"
+    @update-show="whenShowModal"
   >
     <AsyncBaseForm
       ref="asyncBaseForm"
@@ -24,21 +25,36 @@
   import { BaseMenu } from '@/views/view-permissions/baseType'
   import { useMenuHook } from '../../useMenuHook'
   import { AsyncBaseForm } from '@/components'
+  import { addNewSideMenu } from '@/api'
 
   const show = defineModel('show', { type: Boolean, default: false })
   const emit = defineEmits(['refresh'])
+  const message = useMessage()
   const { menuEditModel, menuFormConfig } = useMenuHook()
   const asyncBaseForm = ref()
+
   function onCLoseModalClearModel() {
     show.value = false
-    asyncBaseForm.value?.reSetFormValue()
   }
+
+  function whenShowModal(show: boolean) {
+    if (!show) {
+      asyncBaseForm.value?.reSetFormValue()
+    }
+  }
+
   function cancelFn() {
     show.value = false
   }
-  function confirmFn(_data: BaseMenu) {
-    console.log(_data)
-    emit('refresh')
+  async function confirmFn(_data: BaseMenu) {
+    const res = await addNewSideMenu(_data)
+    if (res.code === 200) {
+      message.info(res.message)
+      emit('refresh')
+      show.value = false
+    } else {
+      message.error(res.message)
+    }
   }
 </script>
 <style scoped lang="less"></style>

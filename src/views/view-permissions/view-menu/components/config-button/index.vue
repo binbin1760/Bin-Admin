@@ -18,7 +18,7 @@
         </n-alert>
 
         <n-divider title-placement="center">
-          {{ data?.meta.name }}
+          {{ data?.name }}
         </n-divider>
         <n-infinite-scroll
           style="height: 240px"
@@ -77,6 +77,7 @@
             <n-button
               type="error"
               size="tiny"
+              @click="deleteMenuBtn(item.id)"
             >
               删除
             </n-button>
@@ -104,99 +105,44 @@
 </template>
 
 <script setup lang="ts">
-  import { BaseButton, BaseMenu } from '@/views/view-permissions/baseType'
+  import { BaseButton } from '@/views/view-permissions/baseType'
   import { useMenuHook } from '../../useMenuHook'
   import { AsyncBaseForm } from '@/components'
   import { NAlert } from 'naive-ui'
   import { clickCopy } from '@/unitls'
+  import {
+    addNewPermissionBtn,
+    getMenuButtonListByPath,
+    deleteMenuButton
+  } from '@/api'
 
   const show = defineModel('show', { type: Boolean, default: false })
   const data = defineModel('data', { type: Object })
   const emit = defineEmits(['refresh'])
   const message = useMessage()
+  const dialog = useDialog()
 
-  const buttonList = ref<Array<BaseButton>>([
-    {
-      id: 'xxxxx',
-      name: 'xxxxaadsxxxxaadsxxxxaadsxxxxaadsxxxxaads',
-      description: '这是个XXX',
-      code: 'xxxxaadsxxxxaadsxxxxaadsxxxxaadsxxxxaadsxxxxaadsxxxxaads',
-      path: 'XXX/XXX/XXX'
-    },
-    {
-      id: 'xxxxx2',
-      name: '删除XXX',
-      description: '这是个XXX',
-      code: 'xxxxaads2',
-      path: 'XXX/XXX/XXX'
-    },
-    {
-      id: 'xxxxx3',
-      name: '删除XXX3',
-      description: '这是个XXX',
-      code: 'xxxxaads3',
-      path: 'XXX/XXX/XXX'
-    },
-    {
-      id: 'xxxxx3',
-      name: '删除XXX3',
-      description: '这是个XXX',
-      code: 'xxxxaads3',
-      path: 'XXX/XXX/XXX'
-    },
-    {
-      id: 'xxxxx4',
-      name: '删除XXX4',
-      description: '这是个XXX',
-      code: 'xxxxaads4',
-      path: 'XXX/XXX/XXX'
-    },
-    {
-      id: 'xxxxx31',
-      name: '删除XXX212',
-      description: '这是个XXX',
-      code: 'xxxxaads3',
-      path: 'XXX/XXX/XXX'
-    },
-    {
-      id: 'xxxxx312',
-      name: '删除XXX3123',
-      description: '这是个XXX',
-      code: 'xxxxaads3',
-      path: 'XXX/XXX/XXX'
-    },
-    {
-      id: 'xxxxx4123',
-      name: '删除XXX4123',
-      description: '这是个XXX',
-      code: 'xxxxaads4123',
-      path: 'XXX/XXX/XXX'
-    },
-    {
-      id: 'xxxxx123123',
-      name: '删除XXXasd',
-      description: '这是个XXX',
-      code: 'xxxxaadsasdad',
-      path: 'XXX/XXX/XXX'
-    },
-    {
-      id: 'xxxxx1asdas',
-      name: '删除XXXaaaxxx',
-      description: '这是个XXX',
-      code: 'xxxxaadsasdasd',
-      path: 'XXX/XXX/XXX'
-    }
-  ])
-
+  const buttonList = ref<Array<BaseButton>>([])
   const namePatterns = ref<Array<string>>([])
   const codePatterns = ref<Array<string>>([])
+
   const { buttonFormConfig, buttonModel } = useMenuHook(
     buttonNamePattern,
     buttonCodePattern
   )
   const asyncBaseForm = ref()
-  function confirmFn(_data: BaseMenu) {
-    emit('refresh')
+  async function confirmFn(_data: BaseButton) {
+    _data.path = data.value.path
+    const res = await addNewPermissionBtn(_data)
+    if (res.code === 200) {
+      message.success(res.message)
+      getCurrentMenuButtons(_data.path)
+      asyncBaseForm.value?.reSetFormValue()
+      namePatterns.value = []
+      codePatterns.value = []
+    } else {
+      message.error(res.message)
+    }
   }
   function cancel() {
     show.value = false
@@ -230,6 +176,40 @@
       }
     )
   }
+  async function getCurrentMenuButtons(path: string) {
+    const res = await getMenuButtonListByPath(path)
+    if (res.code === 200) {
+      buttonList.value = res.data
+    } else {
+      buttonList.value = []
+    }
+  }
+
+  async function deleteMenuBtn(id: string) {
+    dialog.warning({
+      title: '危险操作',
+      content: '请问是否需要删除该按钮',
+      positiveText: '删除',
+      negativeText: '取消',
+      draggable: false,
+      onPositiveClick: async () => {
+        const res = await deleteMenuButton(id)
+        if (res.code === 200) {
+          getCurrentMenuButtons(data.value?.path)
+          message.success(res.message)
+        } else {
+          message.info(res.message)
+        }
+      }
+    })
+  }
+
+  watch(
+    () => data.value,
+    (newVal) => {
+      getCurrentMenuButtons(newVal.path)
+    }
+  )
 </script>
 <style scoped lang="less">
   .edit-menu-button {

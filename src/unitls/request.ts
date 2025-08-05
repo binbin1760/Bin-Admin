@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, Axios } from 'axios'
-import { getUserInfo } from './userInfoStorage'
+import { clearUserInfo, getUserInfo } from './userInfoStorage'
 import router from '@/router'
 export interface BaseResponse<T> {
   data: T
@@ -25,10 +25,9 @@ const service = axios.create({
   withCredentials: true
 }) as MyAxiosInstance
 
-const user = getUserInfo()
-
 service.interceptors.request.use(
   (config) => {
+    const user = getUserInfo()
     if (user.token) {
       config.headers['Authorization'] = `Bearer ${user.token}`
     }
@@ -48,6 +47,7 @@ service.interceptors.response.use(
   (error) => {
     //token验证未通过,跳转登录页
     if (error.status === 401 || error.status === 403) {
+      clearUserInfo()
       router.push('/login')
     }
     return Promise.reject(error)

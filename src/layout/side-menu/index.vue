@@ -49,6 +49,7 @@
   const selectRoute = (key: string) => {
     router.push(key)
   }
+
   watch(
     route,
     (newVal) => {

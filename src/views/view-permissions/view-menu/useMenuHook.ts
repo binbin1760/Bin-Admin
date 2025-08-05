@@ -1,7 +1,7 @@
 import { BaseButton, BaseMenu, YES_OR_NO_FIELD } from '../baseType'
 import { useAsyncRouteStore } from '@/store/modules/asyncRoutes'
 import { AsyncBaseFormConfig } from '@/components'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 export const useMenuHook = (
   buttonNamePattern?: (name: string) => void,
@@ -18,132 +18,137 @@ export const useMenuHook = (
     hidden: true,
     isRoot: false,
     affix: false,
-    parentPath: null
+    pid: null
   })
 
-  const menuFormConfig = ref<Array<AsyncBaseFormConfig>>([
-    {
-      label: '父级菜单',
-      path: 'parentPath',
-      type: 'tree-select',
-      gridSpan: 6,
-      options: useAsyncRoute.getTreeSelectOptions
-    },
-    {
-      label: '名称',
-      path: 'name',
-      gridSpan: 6,
-      type: 'input',
-      rule: {
-        required: true,
-        message: '请输入菜单名称',
-        trigger: ['blur']
-      }
-    },
-    {
-      label: '导航路径',
-      path: 'path',
-      type: 'input',
-      gridSpan: 6,
-      rule: {
-        required: true,
-        message: '请输入导航路径',
-        trigger: ['blur']
-      }
-    },
-    {
-      label: '重定向路径',
-      path: 'redirect',
-      type: 'input',
-      gridSpan: 6,
-      rule: {
-        required: true,
-        message: '请输入重定向路径',
-        trigger: ['blur']
-      }
-    },
-    {
-      label: '序号',
-      path: 'sort',
-      type: 'number',
-      gridSpan: 6,
-      otherProps: {
-        'show-button': false
+  const menuFormConfig = computed((): Array<AsyncBaseFormConfig> => {
+    return [
+      {
+        label: '父级菜单',
+        path: 'pid',
+        type: 'tree-select',
+        gridSpan: 6,
+        options: useAsyncRoute.getTreeSelectOptions,
+        otherProps: {
+          clearable: true
+        }
       },
-      rule: {
-        required: true,
-        message: '请输入排序需要的序号',
+      {
+        label: '名称',
+        path: 'name',
+        gridSpan: 6,
+        type: 'input',
+        rule: {
+          required: true,
+          message: '请输入菜单名称',
+          trigger: ['blur']
+        }
+      },
+      {
+        label: '导航路径',
+        path: 'path',
+        type: 'input',
+        gridSpan: 6,
+        rule: {
+          required: true,
+          message: '请输入导航路径',
+          trigger: ['blur']
+        }
+      },
+      {
+        label: '重定向路径',
+        path: 'redirect',
+        type: 'input',
+        gridSpan: 6,
+        rule: {
+          required: true,
+          message: '请输入重定向路径',
+          trigger: ['blur']
+        }
+      },
+      {
+        label: '序号',
+        path: 'sort',
         type: 'number',
-        trigger: ['blur']
-      }
-    },
-    {
-      label: '是否是侧栏菜单',
-      path: 'hidden',
-      type: 'radio',
-      gridSpan: 6,
-      options: [
-        {
-          label: YES_OR_NO_FIELD[1],
-          value: true
+        gridSpan: 6,
+        otherProps: {
+          'show-button': false
         },
-        {
-          label: YES_OR_NO_FIELD[0],
-          value: false
+        rule: {
+          required: true,
+          message: '请输入排序需要的序号',
+          type: 'number',
+          trigger: ['blur']
         }
-      ],
-      rule: {
-        type: 'boolean',
-        required: true,
-        message: '请确认新菜单是否是侧栏菜单',
-        trigger: ['change']
-      }
-    },
-    {
-      label: '是否固定标签页TAG',
-      path: 'affix',
-      type: 'radio',
-      options: [
-        {
-          label: YES_OR_NO_FIELD[1],
-          value: true
-        },
-        {
-          label: YES_OR_NO_FIELD[0],
-          value: false
+      },
+      {
+        label: '是否是侧栏菜单',
+        path: 'hidden',
+        type: 'radio',
+        gridSpan: 6,
+        options: [
+          {
+            label: YES_OR_NO_FIELD[1],
+            value: true
+          },
+          {
+            label: YES_OR_NO_FIELD[0],
+            value: false
+          }
+        ],
+        rule: {
+          type: 'boolean',
+          required: true,
+          message: '请确认新菜单是否是侧栏菜单',
+          trigger: ['change']
         }
-      ],
-      gridSpan: 6,
-      rule: {
-        type: 'boolean',
-        required: true,
-        message: '请确认新菜单是否需要固定标签页的TAG',
-        trigger: ['change']
-      }
-    },
-    {
-      label: '是否为根节点',
-      path: 'isRoot',
-      type: 'radio',
-      gridSpan: 6,
-      options: [
-        {
-          label: YES_OR_NO_FIELD[1],
-          value: true
-        },
-        {
-          label: YES_OR_NO_FIELD[0],
-          value: false
+      },
+      {
+        label: '是否固定标签页TAG',
+        path: 'affix',
+        type: 'radio',
+        options: [
+          {
+            label: YES_OR_NO_FIELD[1],
+            value: true
+          },
+          {
+            label: YES_OR_NO_FIELD[0],
+            value: false
+          }
+        ],
+        gridSpan: 6,
+        rule: {
+          type: 'boolean',
+          required: true,
+          message: '请确认新菜单是否需要固定标签页的TAG',
+          trigger: ['change']
         }
-      ],
-      rule: {
-        type: 'boolean',
-        required: true,
-        message: '请确认新菜单是否为最外层菜单（根节点）',
-        trigger: ['change']
+      },
+      {
+        label: '是否为根节点',
+        path: 'isRoot',
+        type: 'radio',
+        gridSpan: 6,
+        options: [
+          {
+            label: YES_OR_NO_FIELD[1],
+            value: true
+          },
+          {
+            label: YES_OR_NO_FIELD[0],
+            value: false
+          }
+        ],
+        rule: {
+          type: 'boolean',
+          required: true,
+          message: '请确认新菜单是否为最外层菜单（根节点）',
+          trigger: ['change']
+        }
       }
-    }
-  ])
+    ]
+  })
   //按钮配置
   const buttonModel = ref<Nullable<BaseButton>>({
     name: null,

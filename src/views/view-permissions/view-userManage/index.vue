@@ -19,17 +19,23 @@
     </div>
     <div class="user-manage-table">
       <base-table
+        ref="baseTableRef"
         :columns="column()"
         :requestApi="getUserManageList"
         :query="tableQuery"
         @get-table-data="getTableData"
       />
     </div>
+    <ConifgUserRole
+      v-model:show="show"
+      v-model:user-id="configUserRoleId"
+      @refresh="refreshTable"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { DataTableColumns, NButton, NSelect, NTag } from 'naive-ui'
+  import { DataTableColumns, NButton, NEllipsis, NTag } from 'naive-ui'
   import { BaseUser } from '../baseType.ts'
   import { getUserManageList } from '@/api'
   import styles from '../common.module.css'
@@ -38,8 +44,13 @@
     IDENTITY_NAME,
     STAFF_STATUS
   } from '@/views/view-department/baseType.ts'
+  import { ConifgUserRole } from './components'
+
+  const baseTableRef = ref()
   const tableQuery = ref({ depId: '' })
   const tableData = ref<BaseUser[]>([])
+  const show = ref<boolean>(false)
+  const configUserRoleId = ref<string>()
   const column = (): DataTableColumns<BaseUser> => [
     {
       title: '序号',
@@ -94,48 +105,16 @@
       }
     },
     {
-      title: '角色',
-      key: 'role',
+      title: '拥有角色',
+      key: 'roles',
       align: 'center',
       render(row) {
-        const options = [
-          { label: '管理员', value: 'admin' },
-          { label: '普通用户', value: 'user' },
-          { label: '访客', value: 'guest' },
-          { label: 'A', value: 'A' },
-          { label: 'B', value: 'C' },
-          { label: 'D', value: 'D' },
-          { label: 'AD', value: 'CD' },
-          { label: 'AX', value: 'CX' },
-          { label: 'AC', value: 'CA' },
-          { label: 'A4', value: 'Casd' },
-          { label: 'A3', value: 'Caa' },
-          { label: 'A2', value: 'Csdas' },
-          { label: 'A1', value: 'Casd654564' },
-          { label: 'A12', value: 'Casdaa' },
-          { label: 'A123', value: 'Cxx' },
-          { label: 'A123', value: 'Casdasd' },
-          { label: '其他', value: 'other' }
-        ]
-        return h(NSelect, {
-          options,
-          value: row.roleId,
-          resetMenuOnOptionsChange: false,
-          clearable: true,
-          onUpdateValue: (_value) => {
-            row.roleId = _value
-          },
-          onScroll(e: Event) {
-            const tagret = e.target as HTMLDivElement
-            // 多减去1px 是为了规避小数带来的误差
-            if (
-              tagret.scrollHeight - tagret.scrollTop - 1 <=
-              tagret.clientHeight
-            ) {
-              console.log('滚动到底部了')
-            }
-          }
-        })
+        if (row.roles && row.roles.length === 0) {
+          return '-'
+        } else {
+          const roleStr = row.roles?.map((item) => item.name).join(',')
+          return h(NEllipsis, { lineClamp: 2 }, { default: () => roleStr })
+        }
       }
     },
     {
@@ -149,12 +128,12 @@
             type: 'primary',
             size: 'small',
             onClick: () => {
-              console.log('查看用户信息', row)
-              // 这里可以添加查看用户信息的逻辑
+              show.value = true
+              configUserRoleId.value = row.id
             }
           },
           {
-            default: () => '角色信息'
+            default: () => '分配角色'
           }
         )
         return h('div', { class: styles['table-operate'] }, [viewUser])
@@ -163,6 +142,10 @@
   ]
   const getTableData = (data: BaseUser[]) => {
     tableData.value = data
+  }
+
+  function refreshTable() {
+    baseTableRef.value?.reFresh()
   }
 </script>
 <style scoped lang="less">

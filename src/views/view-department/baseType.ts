@@ -71,10 +71,10 @@ export interface StaffType {
   towGrade: string // 二级序列
   identity: number // 身份 1.正式员工 2.实习生 3.劳务派遣  4.外包人员
   status: 1 | 2 | 3
-  agent: string // 代理人
-  agentId: string // 代理人id
-  agentStartTime: number // 代理开始时间
-  agentEndTime: number // 代理结束时间
+  agent?: string // 代理人
+  agentId?: string // 代理人id
+  agentStartTime?: number // 代理开始时间
+  agentEndTime?: number // 代理结束时间
   agentTime: [number, number] //代理时间段
   department: string // 所属部门名称
   departmentId: string // 部门id

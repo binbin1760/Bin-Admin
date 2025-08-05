@@ -516,11 +516,6 @@ export const useDepartmentHook = () => {
         value: null,
         gridSpan: 6,
         options: [initData.value],
-        rule: {
-          required: true,
-          message: '请选择直属上级',
-          trigger: ['blur']
-        },
         otherProps: {
           'on-load': getUserSelect,
           clearable: true
@@ -534,7 +529,8 @@ export const useDepartmentHook = () => {
         type: 'date',
         path: 'agentTime',
         otherProps: {
-          type: 'daterange'
+          type: 'daterange',
+          clearable: true
         }
       }
     ]
