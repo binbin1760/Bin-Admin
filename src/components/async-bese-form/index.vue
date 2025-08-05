@@ -239,18 +239,4 @@
     justify-content: end;
     gap: 10px;
   }
-  /* 隐藏输入框上下箭头 */
-  #number-input::-webkit-inner-spin-button,
-  #number-input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  // /* 兼容Firefox */
-  // #number-input[type='number'] {
-  //   -moz-appearance: textfield;
-  // }
-  #input-number:deep(.n-input__suffix) {
-    display: none;
-  }
 </style>

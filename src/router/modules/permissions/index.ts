@@ -4,12 +4,33 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/permission',
     meta: {
-      name: '权限设置',
+      name: '权限管理',
       sort: 4
     },
-    redirect: '/permission/button',
+    redirect: '/permission/userManage',
     component: () => import('@/layout/index.vue'),
     children: [
+      {
+        path: '/permission/userManage',
+        meta: {
+          name: '用户管理',
+          isRoot: false,
+          hidden: true,
+          affix: false
+        },
+        component: () =>
+          import('@/views/view-permissions/view-userManage/index.vue')
+      },
+      {
+        path: '/permission/roleSet',
+        meta: {
+          name: '角色设置',
+          isRoot: false,
+          hidden: true,
+          affix: false
+        },
+        component: () => import('@/views/view-permissions/view-role/index.vue')
+      },
       {
         path: '/permission/menu',
         meta: {
@@ -19,17 +40,6 @@ const routes: Array<RouteRecordRaw> = [
           affix: false
         },
         component: () => import('@/views/view-permissions/view-menu/index.vue')
-      },
-      {
-        path: '/permission/button',
-        meta: {
-          name: '按钮权限',
-          isRoot: false,
-          hidden: true,
-          affix: false
-        },
-        component: () =>
-          import('@/views/view-permissions/view-button/index.vue')
       }
     ]
   }

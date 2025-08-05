@@ -6,12 +6,18 @@ import {
 } from '@/store/modules/departmentAndStaff'
 import { getTopDepStroage } from '@/unitls'
 import { TreeSelectOption } from 'naive-ui'
+import { BaseMenu } from '@/views/view-permissions/baseType'
 
 export interface userAndDepHook {
   depId: string
   userId: string
   isUserLeaf: boolean
   isDepLeaf: boolean
+}
+
+export interface roleEditTreeOption extends BaseMenu {
+  key: string
+  label: string
 }
 
 export const useUserAndDepSelectHook = () => {

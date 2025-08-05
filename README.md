@@ -1,14 +1,7 @@
-# Vue 3 + TypeScript + Vite
+## 项目说明
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
-
-## Recommended Setup
-
-- [VS Code](https://code.visualstudio.com/) + [Vue - Official](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (previously Volar) and disable Vetur
-
-- Use [vue-tsc](https://github.com/vuejs/language-tools/tree/master/packages/tsc) for performing the same type checking from the command line, or for generating d.ts files for SFCs.
-
-###
+1. 状态管理器中的权限与动态路由统一整合到 asyncRoutes.ts中
+2. async-base-form 基于传统的vue template 思想进行的初略封装，不支持复杂需求
 
 ## 绩效系统流程问题
 
@@ -22,3 +15,9 @@ This template should help get you started developing with Vue 3 and TypeScript i
 3. 等级分布规则不应该前后端分开计算进行匹配
 4. 字段状态表
 5. 生产相关的数据运算/状态计算/状态标识都必须放后端 - 统一采用业务规则封装法
+
+## 项目启动
+
+1. git clone
+2. npm install
+3. npm run dev

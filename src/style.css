@@ -52,3 +52,15 @@
   --padding-main-right: 8px;
   --main-gap: 4px;
 } */
+/* naive ui 文本高亮组件专用类 */
+.naive-ui-high-light {
+  background: #ff4d4f;
+}
+
+.hight-delet-wargining {
+  padding: 2px 6px;
+  background-color: #faad14;
+  color: #ffffff;
+  border-radius: 2px;
+  font-size: 14px;
+}
