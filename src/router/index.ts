@@ -38,7 +38,7 @@ interface CustomRouterOptions extends RouterOptions {
   constantRoute?: RouteRecordRaw[]
 }
 
-export const whiteList = ['/login', '/redirect', '/redirect/all']
+export const whiteList = ['/login', '/redirect', '/redirect/all', '/err/403']
 export const asyncRoutes = [...routesModuleList]
 export const constantRoute: Array<RouteRecordRaw> = [
   {
@@ -46,6 +46,24 @@ export const constantRoute: Array<RouteRecordRaw> = [
     name: 'login',
     meta: { name: '登录', hidden: true },
     component: () => import('@/views/bin-login/index.vue')
+  },
+  {
+    path: '/redirect',
+    name: 'Redirect',
+    meta: {
+      name: '刷新'
+    },
+    component: () => import('@/layout/index.vue'),
+    children: [
+      {
+        path: '/redirect/all',
+        name: 'toRedirect',
+        meta: {
+          name: '刷新页面'
+        },
+        component: () => import('@/views/redirect/index.vue')
+      }
+    ]
   },
   {
     path: '/',

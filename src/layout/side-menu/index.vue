@@ -11,8 +11,8 @@
 <script setup lang="ts">
   import { useAsyncRouteStore } from '@/store/modules/asyncRoutes'
   import { NIcon, type MenuOption } from 'naive-ui'
-  import { RouteRecordRaw } from 'vue-router'
   import { BookmarkOutline } from '@vicons/ionicons5'
+  import { BaseMenu } from '@/views/view-permissions/baseType'
   const Nmenu = ref<any>()
   const route = useRoute()
   const router = useRouter()
@@ -20,18 +20,18 @@
   function renderIcon(icon: Component) {
     return () => h(NIcon, null, { default: () => h(icon) })
   }
-  function computedMenu(baseMenu: RouteRecordRaw[]) {
+  function computedMenu(baseMenu: BaseMenu[]) {
     return baseMenu.map((item) => {
       if (item.children && item.children.length > 0) {
         return {
-          label: item?.meta?.name,
+          label: item.name,
           key: item.path,
           icon: renderIcon(BookmarkOutline),
           children: computedMenu(item.children)
         }
       }
       return {
-        label: item?.meta?.name,
+        label: item.name,
         key: item.path,
         icon: renderIcon(BookmarkOutline)
       }
@@ -60,7 +60,7 @@
   )
 
   watch(
-    useAsycRoutes.getAsyncRoutes,
+    () => useAsycRoutes.getAsyncRoutes,
     (newVal) => {
       menu.value = computedMenu(newVal)
     },

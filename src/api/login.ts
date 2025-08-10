@@ -10,6 +10,7 @@ interface cacheUser {
   department: string
   departmentId: string
   treeLevel: number
+  name: string
 }
 
 export function login(data: LoginInfo): Promise<BaseResponse<cacheUser>> {

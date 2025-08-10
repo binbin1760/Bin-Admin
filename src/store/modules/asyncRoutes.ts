@@ -55,6 +55,27 @@ function accaccordingToAsyncRoutesGenerateTreeSelectOptions(
   })
 }
 
+function accordingToSideMenuGetPathArr(data: BaseMenu[]): Array<string> {
+  return data.flatMap((item) => {
+    if (item.children && item.children.length > 0) {
+      return [item.path, ...accordingToSideMenuGetPathArr(item.children)]
+    }
+    return item.path ? [item.path] : []
+  })
+}
+
+function traveresMenuTree(
+  data: BaseMenu[],
+  callback: (menu: BaseMenu) => void
+) {
+  data.forEach((item) => {
+    callback(item)
+    if (item.children && item.children.length > 0) {
+      traveresMenuTree(item.children, callback)
+    }
+  })
+}
+
 /***
  *  没必要更具后端菜单数据更新本地路由数据
  *  侧栏菜单直接用后端数据进行渲染
@@ -64,11 +85,11 @@ export const useAsyncRouteStore = defineStore({
   id: 'app-sync-route',
   state: (): asyncRoutesType => ({
     localRoutes: asyncRoutes,
-    asyncRoutes: [] //后端菜单数据
+    asyncRoutes: [] //后端菜单数据,
   }),
   getters: {
-    getAsyncRoutes(): RouteRecordRaw[] {
-      return this.localRoutes
+    getAsyncRoutes(): BaseMenu[] {
+      return this.asyncRoutes
     },
     getTreeSelectOptions(): Array<TreeSelectOption> {
       //this computed property returns a list of options for a tree select component  and nodeData is the tree node of the asyncRoute tree
@@ -92,6 +113,13 @@ export const useAsyncRouteStore = defineStore({
     },
     setAsyncRoutes(data: BaseMenu[]) {
       this.asyncRoutes = data
+    },
+    getSideMenuPathArr(data: BaseMenu[]): Array<string> {
+      return accordingToSideMenuGetPathArr(data)
+    },
+    //遍历菜单树
+    traveresMenuTreeData(callback: (menu: BaseMenu) => void) {
+      traveresMenuTree(this.asyncRoutes, callback)
     }
   }
 })

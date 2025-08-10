@@ -67,3 +67,8 @@ export interface AssignUserRolesParams {
   roleIds: Array<string>
   userId: string
 }
+
+export interface Permissions {
+  buttonCodes: Array<string>
+  sideMenu: BaseMenu[]
+}

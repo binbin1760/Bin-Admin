@@ -1,10 +1,14 @@
 import { tagType } from '@/store/modules/tagViews'
+import { BaseMenu } from '@/views/view-permissions/baseType'
 //登录信息缓存
-interface userInfoType {
+export interface userInfoType {
   token: string | null
   department: string | null
   departmentId: string | null
   treeLevel: number | null
+  name: string | null
+  menu?: BaseMenu[]
+  buttons?: Array<string>
 }
 
 export interface topDep {
@@ -21,7 +25,15 @@ export function getUserInfo(): userInfoType {
   const info = localStorage.getItem('user') as unknown as string
   return JSON.parse(info)
     ? JSON.parse(info)
-    : { token: null, department: null, departmentId: null, treeLevel: null }
+    : {
+        token: null,
+        department: null,
+        departmentId: null,
+        treeLevel: null,
+        name: null,
+        menu: [],
+        buttons: []
+      }
 }
 
 export function clearUserInfo() {

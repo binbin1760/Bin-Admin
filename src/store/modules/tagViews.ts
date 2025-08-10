@@ -7,6 +7,7 @@ export type tagType = {
   key: string
   label: string
   affix: boolean
+  lastPage?: boolean
 }
 
 export interface tagViewsType {
@@ -88,7 +89,15 @@ export const useTagViewsStore = defineStore({
       this.tagList = getUserTagHistory()
     },
     //缓存记录
-    saveTagViews() {
+    saveTagViews(url: string) {
+      url &&
+        this.tagList.forEach((item) => {
+          if (item.key === url) {
+            item.lastPage = true
+          } else {
+            item.lastPage = false
+          }
+        })
       saveUserTagHistory(this.tagList)
     }
   }
