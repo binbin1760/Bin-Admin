@@ -6,7 +6,8 @@ import {
   BaseRole,
   UpdateRoleParam,
   MenuAndMenuButtons,
-  AssignUserRolesParams
+  AssignUserRolesParams,
+  Permissions
 } from '@/views/view-permissions/baseType'
 
 export function addNewSideMenu(data: BaseMenu): Promise<BaseResponse<null>> {
@@ -168,5 +169,12 @@ export function getUserRolesById(
     url: '/api/get/getUserRoles',
     method: 'get',
     params: { id }
+  })
+}
+
+export function verifyUserPermisson(): Promise<BaseResponse<Permissions>> {
+  return request({
+    url: '/api/verifyUserPermission',
+    method: 'get'
   })
 }

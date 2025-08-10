@@ -75,10 +75,12 @@
     ArrowRightOutlined
   } from '@vicons/antd'
   import { NIcon } from 'naive-ui'
+  import { BaseMenu } from '@/views/view-permissions/baseType'
   const route = useRoute()
   const router = useRouter()
   const tabViewsRef = ref<any>(null)
   const tagViews = useTagViewsStore()
+  const useAsyncRoute = useAsyncRouteStore()
   const showIndex = ref<number>()
   const showDragIndex = ref<number>()
 
@@ -91,8 +93,6 @@
       return getDragTags.value
     }
   })
-  tagViews.initTagViews()
-
   const options = computed(() => {
     return [
       {
@@ -173,7 +173,6 @@
   function selectOptions(item: tagType) {
     router.push(item.key)
   }
-
   function scrollX(event: any) {
     if (event.deltaY > 0) {
       tabViewsRef.value.scrollLeft += 50
@@ -192,7 +191,8 @@
     { immediate: true }
   )
   window.addEventListener('beforeunload', () => {
-    tagViews.saveTagViews()
+    const { fullPath } = route
+    tagViews.saveTagViews(fullPath)
   })
 </script>
 <style scoped lang="less">
