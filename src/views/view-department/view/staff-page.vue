@@ -243,7 +243,7 @@
       width: 240,
       render(row) {
         const timeRange =
-          row.agentStartTime && row.agentStartTime
+          row.agentStartTime && row.agentEndTime
             ? formatTimeRange(
                 [row.agentStartTime, row.agentEndTime],
                 'yyyy-MM-dd'

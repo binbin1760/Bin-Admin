@@ -12,9 +12,9 @@
       const router = useRouter()
       onBeforeMount(() => {
         const { query } = route
-        const { pathdata, data } = query
-        if (data) {
-          router.replace({ path: pathdata as string, query: { data } })
+        const { pathdata, ...rest } = query
+        if (rest) {
+          router.replace({ path: pathdata as string, query: rest })
         } else {
           router.replace({ path: pathdata as string })
         }

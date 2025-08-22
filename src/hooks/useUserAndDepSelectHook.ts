@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { getChildDepAndUserList, getDepartmentTree } from '@/api'
+import { getChildDepAndUserList, getDepartmentTree, getTopDep } from '@/api'
 import {
   UserTreeSelectNodeItem,
   DepChildNode
@@ -27,6 +27,14 @@ export const useUserAndDepSelectHook = () => {
     label: name as unknown as string,
     isLeaf: false,
     disabled: true,
+    treeLevl
+  })
+
+  const initDepData = ref<TreeSelectOption>({
+    key: id as unknown as string,
+    label: name as unknown as string,
+    isLeaf: false,
+    disabled: false,
     treeLevl
   })
 
@@ -82,9 +90,25 @@ export const useUserAndDepSelectHook = () => {
     }
   }
 
+  //初始化部门选择器数据
+  const getinitDepData = async () => {
+    if (id) {
+      const res = await getTopDep()
+      initDepData.value = {
+        key: res.data.id as unknown as string,
+        label: res.data.name as unknown as string,
+        isLeaf: false,
+        disabled: false,
+        treeLevl,
+        nodeData: res.data
+      }
+    }
+  }
   initDepAndUserSelectNodeData()
+  getinitDepData()
   return {
     initData,
+    initDepData,
     getDepAndUserSelectNodeData,
     getDepChildNdoeData
   }

@@ -26,6 +26,7 @@
         return {
           label: item.name,
           key: item.path,
+          show: item.hidden,
           icon: renderIcon(BookmarkOutline),
           children: computedMenu(item.children)
         }
@@ -33,6 +34,7 @@
       return {
         label: item.name,
         key: item.path,
+        show: item.hidden,
         icon: renderIcon(BookmarkOutline)
       }
     })

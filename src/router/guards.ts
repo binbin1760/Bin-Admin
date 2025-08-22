@@ -24,7 +24,8 @@ export function createRouterGuards(Router: Router) {
         )
         const tagList = useTagViews.getTagList
         tagList.forEach((item) => {
-          if (!pathArr.includes(item.key)) useTagViews.closeItem(item)
+          const hasKey = pathArr.some((path) => item.key.includes(path))
+          if (!hasKey) useTagViews.closeItem(item)
         })
         //是否有权限
         if (pathArr.includes(_to.path)) {

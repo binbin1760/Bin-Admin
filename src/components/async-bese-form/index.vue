@@ -193,6 +193,7 @@
 
   const emit = defineEmits(['cancel', 'confirm'])
   const formData = ref<any>(props.model)
+  const originFormData = ref<any>(JSON.parse(JSON.stringify(props.model)))
   const formRef = ref<any>(null)
   const config = ref(props.config)
   function cancelForm() {
@@ -211,12 +212,7 @@
   //to reset FormComponent value
   function reSetFormValue() {
     formRef.value?.restoreValidation()
-    const pathArr = props.config.map((item) => item.path)
-    if (Array.isArray(pathArr) && pathArr.length > 0) {
-      pathArr.forEach((path) => {
-        formData.value[path] = null
-      })
-    }
+    formData.value = originFormData.value
   }
   defineExpose({
     reSetFormValue,

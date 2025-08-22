@@ -73,7 +73,6 @@
     flex-direction: column;
     gap: calc(2 * var(--main-gap));
   }
-
   .n-layout-sider {
     background: #303438;
     height: 100vh;

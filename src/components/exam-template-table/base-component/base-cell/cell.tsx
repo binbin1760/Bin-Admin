@@ -1,4 +1,4 @@
-import { defineComponent, PropType, toRefs } from 'vue'
+import { defineComponent, toRefs } from 'vue'
 import styles from './cell.module.css'
 
 export default defineComponent({

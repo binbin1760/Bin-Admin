@@ -1,7 +1,10 @@
 import { getUserTagHistory, saveUserTagHistory } from '@/unitls'
 import { store } from '../index'
 import { defineStore } from 'pinia'
-import { RouteRecordRaw } from 'vue-router'
+import {
+  RouteLocationNormalizedLoadedGeneric,
+  RouteRecordRaw
+} from 'vue-router'
 
 export type tagType = {
   key: string
@@ -34,9 +37,9 @@ export const useTagViewsStore = defineStore({
   },
   actions: {
     //新增
-    addTag(route: RouteRecordRaw) {
+    addTag(route: RouteLocationNormalizedLoadedGeneric) {
       const tag = {
-        key: route.path,
+        key: route.fullPath,
         label: route?.meta?.name,
         affix: route?.meta?.affix
       } as unknown as tagType
@@ -98,6 +101,12 @@ export const useTagViewsStore = defineStore({
             item.lastPage = false
           }
         })
+
+      this.tagList = this.tagList.filter((item) => {
+        return (
+          !item.key.includes('/redirect') || !item.key.includes('/redirect/all')
+        )
+      })
       saveUserTagHistory(this.tagList)
     }
   }

@@ -1,0 +1,6 @@
+.operate-cell {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--main-gap) * 2);
+  justify-content: center;
+}
