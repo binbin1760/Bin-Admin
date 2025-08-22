@@ -64,3 +64,28 @@
   border-radius: 2px;
   font-size: 14px;
 }
+
+/* 指标分解节点伪元素层级限制 */
+.tree-org-node::before,
+.tree-org-node::after {
+  z-index: -1;
+}
+
+/* 
+ 全局组织架构组织操作栏定位在左边
+*/
+.zm-tree-handle {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+}
+
+/* 全局n-date-picker 宽度设置100% */
+.n-date-picker {
+  width: 100%;
+}
+
+/* 全局n-input-number组件 宽度设置为100% */
+.n-input-number {
+  width: 100%;
+}

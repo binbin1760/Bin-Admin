@@ -117,6 +117,7 @@
     gap: var(--margin-main);
     height: 100%;
     border: 1px solid rgba(239, 239, 245, 1);
+    box-sizing: border-box;
     .table {
       height: 100%;
     }
@@ -125,6 +126,7 @@
       gap: var(--margin-main);
       justify-content: flex-end;
       align-items: center;
+      padding: 4px;
       .data-total {
         color: var(--main-color);
       }

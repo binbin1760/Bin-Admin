@@ -6,6 +6,7 @@ export type FormatStr =
   | 'HH:mm:ss'
   | 'yyyy/MM/dd HH:mm:ss'
   | 'yyyy/MM/dd'
+  | 'yyyy'
 export function formatDate(
   timeStamp: number,
   formatStr: FormatStr = 'yyyy-MM-dd HH:mm:ss'

@@ -67,7 +67,7 @@ export function getMenuButtonListByPath(
   path: string
 ): Promise<BaseResponse<Array<BaseButton>>> {
   return request({
-    url: '/api/get/menuButtonList',
+    url: '/api/get/menuButtonListByPath',
     method: 'get',
     params: {
       path

@@ -154,11 +154,12 @@
   }
 
   function reLoadpage() {
+    const data = route.query
     router.push({
       path: '/redirect/all',
       query: {
         pathdata: route.path,
-        data: route.query.data
+        ...data
       }
     })
   }

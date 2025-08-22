@@ -67,7 +67,6 @@
   import { VueDraggable } from 'vue-draggable-plus'
   import { tagType, useTagViewsStore } from '@/store/modules/tagViews'
   import { whiteList } from '@/router/index'
-  import { RouteRecordRaw } from 'vue-router'
   import {
     ColumnWidthOutlined,
     MinusOutlined,
@@ -75,12 +74,10 @@
     ArrowRightOutlined
   } from '@vicons/antd'
   import { NIcon } from 'naive-ui'
-  import { BaseMenu } from '@/views/view-permissions/baseType'
   const route = useRoute()
   const router = useRouter()
   const tabViewsRef = ref<any>(null)
   const tagViews = useTagViewsStore()
-  const useAsyncRoute = useAsyncRouteStore()
   const showIndex = ref<number>()
   const showDragIndex = ref<number>()
 
@@ -130,7 +127,6 @@
       return route.fullPath
     }
   })
-
   function showFixDrapMenu(index: number) {
     showIndex.value = index
   }
@@ -162,7 +158,7 @@
   function handleClose(item: tagType) {
     if (tagViews.getTagListLength >= 2) {
       const index = tagViews.getTagList.findIndex((it) => item.key === it.key)
-      router.push(tagViews.getTagList[index - 1].key)
+      router.push(tagViews.getTagList[Math.abs(index - 1)].key)
       tagViews.closeItem(item)
     } else {
       tagViews.closeItem(item)
@@ -184,8 +180,12 @@
     route,
     (newVal) => {
       const { fullPath } = newVal
-      if (!whiteList.includes(fullPath)) {
-        tagViews.addTag(newVal as unknown as RouteRecordRaw)
+      if (
+        !whiteList.includes(fullPath) ||
+        fullPath.includes('/redirect/all') ||
+        fullPath.includes('/redirect')
+      ) {
+        tagViews.addTag(newVal)
       }
     },
     { immediate: true }
