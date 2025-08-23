@@ -1,0 +1,15 @@
+.table-operate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.view-errlog-popver-content {
+  max-width: 600px;
+  max-height: 1000px;
+  white-space: pre-wrap;
+  border: 1px solid var(--main-border-color);
+  background-color: #f8f9fa;
+  border: 2px;
+}
