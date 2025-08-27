@@ -1,4 +1,42 @@
 .base-table {
-  border-collapse: collapse;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
+}
+
+.base-table-scroll-contain {
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+.base-table-tbody-contain {
+  overflow: scroll;
+  scrollbar-width: none;
+  z-index: auto;
+}
+
+.base-table-scorll-x-bar {
+  display: none;
+  border-radius: 5px;
+  height: 5px;
+  background-color: #5e5e5e;
+  position: absolute;
+  z-index: 99;
+  bottom: 3px;
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+.base-table-scorll-y-bar {
+  display: none;
+  border-radius: 5px;
+  height: 50px;
+  width: 5px;
+  position: absolute;
+  right: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  z-index: 99;
 }

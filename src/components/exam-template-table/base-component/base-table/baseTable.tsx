@@ -1,9 +1,19 @@
 import {
   baseTableType,
   column,
-  data
+  data,
+  Inner_Column
 } from '@/components/exam-template-table/base'
-import { PropType, defineComponent, toRefs, computed } from 'vue'
+import {
+  PropType,
+  defineComponent,
+  toRefs,
+  computed,
+  CSSProperties,
+  ref,
+  onMounted,
+  provide
+} from 'vue'
 import {
   getTreeDepth,
   getLeafNodes
@@ -13,7 +23,7 @@ import BaseTbody from '../base-tbody/baseTbody.tsx'
 import styles from './baseTable.module.css'
 
 //计算每个节点的colspan
-function markNodeColspan(tree: Array<column>) {
+function markNodeColspan(tree: Array<Inner_Column>) {
   tree.forEach((item) => {
     if (item.children && item.children.length > 0) {
       markNodeColspan(item.children)
@@ -28,13 +38,13 @@ function markNodeColspan(tree: Array<column>) {
 /**
  * 正序遍历树，rowspan =树的深度deep - 父节点的rowspan
  */
-function markNodeRowspan(tree: Array<column>, maxDeep: number) {
+function markNoderowspan(tree: Array<Inner_Column>, maxDeep: number) {
   tree.forEach((item) => {
     if (item.children && item.children.length > 0) {
-      item.rowspan = item.rowspan ? item.rowspan : 1
-      markNodeRowspan(item.children, maxDeep - item.rowspan)
+      item.titleRowspan = item.titleRowspan ? item.titleRowspan : 1
+      markNoderowspan(item.children, maxDeep - item.titleRowspan)
     } else {
-      item.rowspan = item.rowspan ? item.rowspan : maxDeep
+      item.titleRowspan = item.titleRowspan ? item.titleRowspan : maxDeep
     }
   })
 }
@@ -43,7 +53,7 @@ function markNodeRowspan(tree: Array<column>, maxDeep: number) {
  * 知识点：需要搞明白什么叫广度优先搜索 什么叫深度优先搜索
  * 实现方式:广度优先搜索 + 设置偏移量  （节点的offset = 父代的rowspan || 1）
  */
-function getColumnsRowArry(data: Array<column>) {
+function getColumnsRowArry(data: Array<Inner_Column>) {
   if (!data || data.length === 0) return []
   const levels: Array<Array<column>> = []
   let queue: Array<{ node: column; offset: number }> = data.map((node) => ({
@@ -77,7 +87,7 @@ function getColumnsRowArry(data: Array<column>) {
       if (currNode.node.children && currNode.node.children.length > 0) {
         const nextQueueTemp = currNode.node.children.map((child) => ({
           node: child,
-          offset: currNode.node.rowspan || 1
+          offset: currNode.node.titleRowspan || 1
         }))
         nextQueue = nextQueue.concat(nextQueueTemp)
       }
@@ -88,6 +98,52 @@ function getColumnsRowArry(data: Array<column>) {
   }
 
   return levels
+}
+/**
+ * 如果某子树开启粘性定位，那么子树任意节点的定位偏移量=该节点前一个兄弟节点的宽度+父节点的偏移量
+ */
+function getStickyDisplacement(
+  data: column[],
+  displacement: number
+): Inner_Column[] {
+  return data.map((item, index) => {
+    const innerColumn: Inner_Column = { ...item }
+    if (item.fixed && item.fixed === 'left') {
+      const lastBrotherNodeWidth = index > 0 ? data[index - 1].width : 0
+      const fixedCssProperties: CSSProperties = {
+        left:
+          displacement +
+          (lastBrotherNodeWidth ? lastBrotherNodeWidth : 0) +
+          'px'
+      }
+      innerColumn.fixedCssProperties = fixedCssProperties
+      if (item.children && item.children.length > 0) {
+        innerColumn.children = getStickyDisplacement(
+          item.children,
+          displacement + (lastBrotherNodeWidth ? lastBrotherNodeWidth : 0)
+        )
+      }
+    }
+
+    if (item.fixed && item.fixed === 'right') {
+      const brotherNodesWidthCount = data
+        .filter((it, dex) => it.fixed === 'right' && dex > index)
+        .reduce((acc, curr) => {
+          return acc + (curr.width ? curr.width : 0)
+        }, 0)
+      innerColumn.fixedCssProperties = {
+        right: displacement + brotherNodesWidthCount + 'px'
+      }
+      if (item.children && item.children.length > 0) {
+        innerColumn.children = getStickyDisplacement(
+          item.children,
+          displacement + brotherNodesWidthCount
+        )
+      }
+    }
+
+    return innerColumn
+  })
 }
 
 export default defineComponent({
@@ -105,33 +161,197 @@ export default defineComponent({
   },
   setup(props) {
     const { config, data } = toRefs(props)
+    const tbodyRef = ref<HTMLDivElement | null>()
+    const theadRef = ref<HTMLDivElement | null>()
+    const scrollXRef = ref<HTMLDivElement | null>()
+    const sliderWidth = ref<number>(50)
+    //横向滚动条可以滚动的距离<仅是初始化状态，滚动条位置为0时>
+    const canScorllDisplacement = computed(() => {
+      return (
+        (config.value.scorllX ?? 0) - (tbodyRef.value?.clientWidth ?? 0) + 1
+      )
+    })
+    //是否显示X轴滚动条
+    const isShowXScorllBar = ref<boolean>(false)
+    //是否显示Y轴滚动条
+    const isShowYScorllBar = ref<boolean>(false)
+    const isDrigger = ref<boolean>(false)
+    const startX = ref<number>(0) //拖动开始的X坐标
+    const startDriggerScrollPlace = ref<number>(0) //拖动开始时滚动条的位置
+    const scrollPosition = ref<number>(0) //滚动条位置
+    //计算节点粘性定位偏移量
+    const inner_columns = computed(() =>
+      getStickyDisplacement(config.value.columns, 0)
+    )
     //计算树的深度(deep)
-    const deep = getTreeDepth(config.value.columns)
+    const deep = getTreeDepth(inner_columns.value)
     //标记colspan
-    markNodeColspan(config.value.columns)
+    markNodeColspan(inner_columns.value)
     //标记rowspan
-    markNodeRowspan(config.value.columns, deep)
+    markNoderowspan(inner_columns.value, deep)
     //计算thead
     const columnsArr = computed(() => {
-      return getColumnsRowArry(config.value.columns)
+      return getColumnsRowArry(inner_columns.value)
     })
     //计算获取叶子节点
     const leafNodes = computed(() => {
-      return getLeafNodes(config.value.columns)
+      return getLeafNodes(inner_columns.value)
     })
+
+    function mouseEnterEvent() {
+      isShowXScorllBar.value = true && canScorllDisplacement.value > 0
+    }
+
+    function mouseOutEvent() {
+      isShowXScorllBar.value = false
+      isShowYScorllBar.value = false
+    }
+
+    //自定义滚动
+    function handleDragStart(e: MouseEvent) {
+      if (isDrigger.value) return
+
+      if (canScorllDisplacement.value <= 0) return
+
+      isDrigger.value = true
+      startX.value = e.clientX
+      startDriggerScrollPlace.value = scrollPosition.value
+      document.addEventListener('mousemove', handleDragMove)
+      document.addEventListener('mouseup', handleDragEnd)
+
+      //防止滚动时选择文本
+      e.preventDefault()
+    }
+
+    function handleDragMove(e: MouseEvent) {
+      if (!isDrigger.value || !scrollXRef.value || !tbodyRef.value) return
+      isShowXScorllBar.value = true
+      const deltaX = e.clientX - startX.value
+      let newPosition = startDriggerScrollPlace.value + deltaX
+      document.body.style.cursor = 'pointer'
+      //计算滚动范围
+      // 限制滚动位置在有效范围内
+      newPosition = Math.max(
+        0,
+        Math.min(newPosition, canScorllDisplacement.value)
+      )
+      scrollPosition.value = newPosition
+
+      // 计算滚动比例并应用到表格
+      const scrollRatio =
+        canScorllDisplacement.value > 0
+          ? newPosition / canScorllDisplacement.value
+          : 0
+      const scrollAmount = scrollRatio * canScorllDisplacement.value
+      // 同步表格滚动
+      if (tbodyRef.value) {
+        tbodyRef.value.scrollLeft = scrollAmount
+      }
+      if (theadRef.value) {
+        theadRef.value.scrollLeft = scrollAmount
+      }
+    }
+
+    function handleDragEnd(e: MouseEvent) {
+      isDrigger.value = false
+      isShowXScorllBar.value = false
+      // 移除事件监听
+      document.removeEventListener('mousemove', handleDragMove)
+      document.removeEventListener('mouseup', handleDragEnd)
+      document.body.style.cursor = ''
+    }
+
+    provide('showShaowObj', {
+      isLeft: computed(() => scrollPosition.value === 0),
+      isRight: computed(
+        () => scrollPosition.value >= canScorllDisplacement.value
+      )
+    })
+    // 初始化时计算滑块宽度
+    onMounted(() => {
+      if (tbodyRef.value && config.value.scorllX) {
+        // 根据内容比例计算滑块宽度，确保不小于最小宽度
+        sliderWidth.value = Math.max(
+          50,
+          tbodyRef.value.clientWidth -
+            (config.value.scorllX - tbodyRef.value.clientWidth)
+        )
+      }
+
+      //监听表头滚动事件
+      if (theadRef.value) {
+        theadRef.value.addEventListener('scroll', function () {
+          if (theadRef.value && tbodyRef.value) {
+            tbodyRef.value.scrollLeft = theadRef.value.scrollLeft
+            scrollPosition.value = theadRef.value.scrollLeft
+          }
+        })
+      }
+
+      if (tbodyRef.value) {
+        tbodyRef.value.addEventListener('scroll', function () {
+          if (theadRef.value && tbodyRef.value) {
+            theadRef.value.scrollLeft = tbodyRef.value.scrollLeft
+            scrollPosition.value = tbodyRef.value.scrollLeft
+          }
+        })
+      }
+    })
+
     return () => (
-      <table class={styles['base-table']}>
-        <BaseThead columns={columnsArr.value} />
-        <BaseTbody
-          columns={leafNodes.value}
-          data={data.value}
-        />
-        <tfoot>
-          <tr>
-            <td></td>
-          </tr>
-        </tfoot>
-      </table>
+      <div style={{ position: 'relative' }}>
+        <div
+          ref={theadRef}
+          class={styles['base-table-scroll-contain']}
+        >
+          <table
+            style={{ minWidth: config.value.scorllX + 'px' }}
+            class={styles['base-table']}
+          >
+            <colgroup>
+              {leafNodes.value.map((item) => {
+                return <col style={{ width: item.width + 'px' }} />
+              })}
+            </colgroup>
+            <BaseThead columns={columnsArr.value} />
+          </table>
+        </div>
+        <div
+          ref={tbodyRef}
+          onMouseenter={mouseEnterEvent}
+          onMouseleave={mouseOutEvent}
+          class={styles['base-table-tbody-contain']}
+        >
+          <table
+            style={{ minWidth: config.value.scorllX + 'px' }}
+            class={styles['base-table']}
+          >
+            <colgroup>
+              {leafNodes.value.map((item) => {
+                return <col style={{ width: item.width + 'px' }} />
+              })}
+            </colgroup>
+            <BaseTbody
+              columns={leafNodes.value}
+              data={data.value}
+            />
+          </table>
+          <div
+            ref={scrollXRef}
+            style={{
+              display: isShowXScorllBar.value ? 'block' : 'none',
+              width: sliderWidth.value + 'px',
+              left: scrollPosition.value + 'px'
+            }}
+            class={styles['base-table-scorll-x-bar']}
+            onMousedown={handleDragStart}
+          ></div>
+          <div
+            style={{ display: isShowYScorllBar.value ? 'block' : 'none' }}
+            class={styles['base-table-scorll-y-bar']}
+          ></div>
+        </div>
+      </div>
     )
   }
 })

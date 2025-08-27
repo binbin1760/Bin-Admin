@@ -1,16 +1,5 @@
 <template>
   <div>
-    <div>尝试读取excel</div>
-    <input
-      ref="excelRef"
-      type="file"
-      accept=".xlsx"
-    />
-    <n-button @click="readExcel">读取EXCEL</n-button>
-    <div>在线excel</div>
-    <div id="excel-online">
-      <excelTable :work-book="sheets" />
-    </div>
     <div>测试模板配置表格：</div>
     <div>
       <examTemplateTable
@@ -22,26 +11,8 @@
 </template>
 
 <script setup lang="ts">
-  import * as xlxs from 'xlsx'
-  import { excelTable, examTemplateTable } from '@/components'
+  import { examTemplateTable } from '@/components'
   import { combineTables } from '@/components/exam-template-table/base'
-  const excelRef = ref<HTMLInputElement | null>(null)
-  const sheets = ref<any>()
-  const readExcel = () => {
-    const newfileReder = new FileReader()
-    newfileReder.onload = (e) => {
-      const workbook = xlxs.read(e.target?.result, {
-        type: 'binary',
-        cellStyles: true
-      })
-      sheets.value = workbook
-      const Sheet = workbook.Sheets[workbook.SheetNames[0]]
-      console.log(workbook)
-      //表格数据范围   可以利用这个数据绘制表格
-      console.log(Sheet['A1'].s)
-    }
-    newfileReder.readAsArrayBuffer(excelRef.value?.files?.[0] as Blob)
-  }
   // 测试模板配置表格
   const tables = ref<combineTables>([
     {
@@ -50,16 +21,30 @@
           title: '姓名',
           key: 'name',
           align: 'center',
+          titleRowspan: 1,
+          fixed: 'left',
+          width: 300,
           children: [
             {
               title: '姓氏',
               key: 'firstName',
-              align: 'center'
+              align: 'center',
+              width: 200,
+              fixed: 'left',
+              render(row) {
+                return h(
+                  NButton,
+                  { type: 'info' },
+                  { default: () => row.firstName }
+                )
+              }
             },
             {
               title: '名字',
               key: 'lastName',
-              align: 'center'
+              align: 'center',
+              fixed: 'left',
+              width: 100
             }
           ]
         },
@@ -69,35 +54,56 @@
           align: 'center'
         },
         {
+          title: '测试列1',
+          key: 'test-colimn-1',
+          align: 'center'
+        },
+        {
+          title: '测试列1',
+          key: 'test-colimn-2',
+          align: 'center'
+        },
+        {
           title: '商品',
           key: 'goods',
           align: 'center',
+          fixed: 'right',
+          width: 300,
           children: [
             {
               title: '待售',
               key: 'onSale',
               align: 'center',
+              fixed: 'right',
+              width: 200,
               children: [
                 {
                   title: '已上架',
                   key: 'list',
-                  align: 'center'
+                  align: 'center',
+                  width: 100,
+                  fixed: 'right'
                 },
                 {
                   title: '待上架',
                   key: 'unList',
-                  align: 'center'
+                  align: 'center',
+                  width: 100,
+                  fixed: 'right'
                 }
               ]
             },
             {
               title: '已售',
               key: 'saled',
-              align: 'center'
+              align: 'center',
+              width: 100,
+              fixed: 'right'
             }
           ]
         }
-      ]
+      ],
+      scorllX: 1800
     },
     {
       columns: [
@@ -140,12 +146,14 @@
             {
               title: '产品',
               key: 'product',
-              align: 'center'
+              align: 'center',
+              width: 100
             },
             {
               title: '服务',
               key: 'service',
-              align: 'center'
+              align: 'center',
+              width: 150
             }
           ]
         },
