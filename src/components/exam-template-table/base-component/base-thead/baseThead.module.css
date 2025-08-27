@@ -6,6 +6,8 @@
   border: 1px solid #e0e0e0;
   border-top: none;
   padding: 8px;
+  background-color: #fafafc;
+  box-sizing: border-box;
 }
 
 .base-thead-tr {
@@ -13,5 +15,28 @@
   line-height: 32px;
   text-align: center;
   font-size: 12px;
-  background-color: #fafafc;
+}
+
+.fixed-left-shadow::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  bottom: -1px;
+  width: 36px;
+  right: -36px;
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 12px 0 8px -12px rgba(0, 0, 0, 0.36);
+}
+
+.fixed-right-shadow::before {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  bottom: -1px;
+  width: 36px;
+  left: -36px;
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset -12px 0 8px -12px rgba(0, 0, 0, 0.36);
 }

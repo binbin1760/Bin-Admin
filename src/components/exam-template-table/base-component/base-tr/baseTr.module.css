@@ -3,7 +3,36 @@
   color: #333333;
   font-size: 12px;
   border: 1px solid #d9d9d9;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  padding: 4px;
+  position: relative;
 }
-.base-tr:hover {
+
+.base-tr:hover .base-tr-td {
   background-color: #f5f5f5;
+}
+
+.fixed-left-shadow::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  bottom: -1px;
+  width: 36px;
+  right: -36px;
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 12px 0 8px -12px rgba(0, 0, 0, 0.36);
+}
+
+.fixed-right-shadow::before {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  top: 0;
+  bottom: -1px;
+  width: 36px;
+  left: -36px;
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset -12px 0 8px -12px rgba(0, 0, 0, 0.36);
 }
