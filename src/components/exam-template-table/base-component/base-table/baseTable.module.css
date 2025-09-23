@@ -40,3 +40,26 @@
   cursor: pointer;
   z-index: 99;
 }
+
+.base-table-header-title {
+  border: 1px solid #e0e0e0;
+  border-top: none;
+  padding: 4px;
+}
+
+.base-table-summary {
+  overflow: scroll;
+  scrollbar-width: none;
+}
+
+.base-tr-td {
+  text-align: center;
+  color: #333333;
+  font-size: 12px;
+  border: 1px solid #d9d9d9;
+  border-top: none;
+  background-color: #ffffff;
+  box-sizing: border-box;
+  padding: 4px;
+  position: relative;
+}
