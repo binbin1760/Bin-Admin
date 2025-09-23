@@ -12,12 +12,14 @@
     "animate.css": "^4.1.1",
     "axios": "^1.7.7",
     "date-fns": "^4.1.0",
+    "decimal.js": "^10.6.0",
     "highlight.js": "^11.11.1",
     "less": "^4.2.0",
     "less-loader": "^12.2.0",
     "markdown-it": "^14.1.0",
     "markdown-it-code-copy": "^0.2.2",
     "markdown-it-highlightjs": "^4.2.0",
+    "mitt": "^3.0.1",
     "pinia": "^2.1.7",
     "prettier": "^3.2.5",
     "socket.io-client": "^4.8.1",
@@ -29,6 +31,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@types/decimal.js": "^0.0.32",
     "@types/node": "^20.14.4",
     "@vicons/antd": "^0.12.0",
     "@vicons/ionicons4": "^0.12.0",

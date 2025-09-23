@@ -3,7 +3,7 @@
     <div>测试模板配置表格：</div>
     <div>
       <examTemplateTable
-        :combine-tables="tables"
+        v-model:combine-tables="tables"
         :data="[data, secondTable, thirdTable]"
       />
     </div>
@@ -31,20 +31,39 @@
               align: 'center',
               width: 200,
               fixed: 'left',
-              render(row) {
-                return h(
-                  NButton,
-                  { type: 'info' },
-                  { default: () => row.firstName }
-                )
-              }
+              children: [
+                {
+                  title: '姓氏-1',
+                  key: 'firstName1',
+                  align: 'center',
+                  width: 100,
+                  isChildren: true,
+                  fixed: 'left',
+                  render: (data) => {
+                    return h(
+                      NTag,
+                      { type: 'info' },
+                      { default: () => data.firstName1 }
+                    )
+                  }
+                },
+                {
+                  title: '姓氏-2',
+                  key: 'firstName2',
+                  align: 'center',
+                  width: 100,
+                  fixed: 'left',
+                  isChildren: true
+                }
+              ]
             },
             {
               title: '名字',
               key: 'lastName',
               align: 'center',
               fixed: 'left',
-              width: 100
+              width: 100,
+              isChildren: true
             }
           ]
         },
@@ -71,6 +90,13 @@
           width: 300,
           children: [
             {
+              title: '已售',
+              key: 'saled',
+              align: 'center',
+              width: 100,
+              fixed: 'right'
+            },
+            {
               title: '待售',
               key: 'onSale',
               align: 'center',
@@ -92,18 +118,28 @@
                   fixed: 'right'
                 }
               ]
-            },
-            {
-              title: '已售',
-              key: 'saled',
-              align: 'center',
-              width: 100,
-              fixed: 'right'
             }
           ]
         }
       ],
-      scorllX: 1800
+      headerTitle: {
+        title: '第一部分'
+      },
+      summary: {
+        columns: [
+          {
+            colspan: 8,
+            data: '合计1'
+          },
+          {
+            colspan: 1,
+            data: 50
+          }
+        ]
+      },
+      scorllX: 1600,
+      childrenKey: 'children',
+      draggable: true
     },
     {
       columns: [
@@ -120,16 +156,27 @@
             {
               title: '差评',
               key: 'badFeedback',
-              align: 'center'
+              align: 'center',
+              isChildren: true
             },
             {
               title: '好评',
               key: 'goodFeedback',
-              align: 'center'
+              align: 'center',
+              isChildren: true
             }
           ]
         }
-      ]
+      ],
+      headerTitle: {
+        render: () =>
+          h(
+            NTag,
+            { type: 'success' },
+            { default: () => '测试childreKey自动合并模式' }
+          )
+      },
+      childrenKey: 'children'
     },
     {
       columns: [
@@ -180,55 +227,76 @@
   //测试模板数据
   const data = ref([
     {
-      firstName: '张',
-      lastName: '三',
-      address: '北京市海淀区',
+      address: '测试G1',
       list: 10,
       unList: 5,
-      saled: 20
+      saled: 20,
+      'test-colimn-1': '拉克斯基大领口设计的拉萨看得见拉克斯基',
+      'test-colimn-2': '阿拉山口大家阿拉山口大家拉克丝记录',
+      children: [
+        {
+          firstName1: '33',
+          firstName2: '44',
+          lastName: '三'
+        },
+        {
+          firstName1: '张',
+          firstName2: '杨',
+          lastName: '三'
+        },
+        {
+          firstName1: '云龙',
+          firstName2: '火焰獠牙',
+          lastName: '威龙'
+        }
+      ]
     },
     {
-      firstName: '李',
-      lastName: '四',
-      address: '上海市浦东新区',
-      list: 15,
-      unList: 3,
-      saled: 30
+      address: '啊大苏打',
+      list: 105,
+      unList: 51,
+      saled: 203,
+      'test-colimn-1': '阿拉山口大家阿喀琉斯就',
+      'test-colimn-2': 'alskdjalskjlaskjd',
+      children: [
+        {
+          firstName1: '起',
+          firstName2: '飞',
+          lastName: '三'
+        },
+        {
+          firstName1: '张',
+          firstName2: '杨',
+          lastName: '三'
+        }
+      ]
     }
   ])
   const secondTable = ref([
     {
       userName: '甲方A',
-      badFeedback: '无',
-      goodFeedback: '很棒'
-    },
-    {
-      userName: '可盖',
-      badFeedback: '有待改进',
-      goodFeedback: '还不错'
-    },
-    {
-      userName: '米儿',
-      badFeedback: '无',
-      goodFeedback: '优秀'
-    },
-    {
-      userName: '林克',
-      badFeedback: '没有锅盖，我还怎么林克时间',
-      goodFeedback: '无'
+      children: [
+        {
+          badFeedback: '无',
+          goodFeedback: '很棒'
+        },
+        {
+          badFeedback: '有',
+          goodFeedback: '不是很好'
+        }
+      ]
     }
   ])
-
   const thirdTable = ref([
     {
-      salesSummary: '销售额增长',
+      salesSummary: '叮叮叮',
       product: '产品质量好',
       service: '服务态度好',
       productOptimization: '增加新功能',
       serviceOptimization: '提高响应速度'
     },
     {
-      salesSummary: '销售额增长',
+      salesSummary: '当当当当',
       product: '产品质量好',
       service: '服务态度好',
       productOptimization: '增加新功能',

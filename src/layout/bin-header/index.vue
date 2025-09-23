@@ -1,6 +1,16 @@
 <template>
   <div class="header">
     <div class="refresh-breadcrimb">
+      <n-icon
+        size="20"
+        color="#0691D9"
+        style="cursor: pointer"
+        @click="handleCollapse"
+      >
+        <component
+          :is="collapseStatus ? ChevronBackCircleSharp : ChevronForwardCircle"
+        ></component>
+      </n-icon>
       <n-icon size="18">
         <div
           class="refresh-box"
@@ -56,7 +66,7 @@
             style="width: 100%"
             @click="logOut"
           >
-            推出登录
+            退出登录
           </n-button>
         </div>
       </n-popover>
@@ -112,7 +122,11 @@
 <script setup lang="ts">
   import { MdSettings } from '@vicons/ionicons4'
   import { UserOutlined, MessageOutlined } from '@vicons/antd'
-  import { Refresh } from '@vicons/ionicons5'
+  import {
+    Refresh,
+    ChevronBackCircleSharp,
+    ChevronForwardCircle
+  } from '@vicons/ionicons5'
   import { SystemSetDraw } from './components'
   import { DrawerPlacement } from 'naive-ui'
   import {
@@ -122,6 +136,10 @@
   } from '@/unitls/userInfoStorage'
   const route = useRoute()
   const router = useRouter()
+  const collapseStatus = defineModel('collapseStatus', {
+    type: Boolean,
+    required: true
+  })
   const breadCrumbItem = computed({
     get() {
       return route.matched.map((item) => {
@@ -164,6 +182,9 @@
     })
   }
 
+  function handleCollapse() {
+    collapseStatus.value = !collapseStatus.value
+  }
   userInfo.value = getUserInfo()
 </script>
 <style scoped lang="less">

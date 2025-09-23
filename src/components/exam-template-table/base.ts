@@ -1,16 +1,11 @@
-import type { CSSProperties, VNode } from 'vue'
-import { PropType } from 'vue'
+import type { CSSProperties, VNode, PropType } from 'vue'
+import mitt from 'mitt'
 
 // 顶部title栏
 interface headerTitle {
-  title: string
-  render?: (title: string) => VNode
+  title?: string
+  render?: () => VNode
 }
-/**
- * 列的属性配置说明
- * 1.表头的colspan/rowspan
- *
- * */
 
 /**
  * 关于树形结构colgroup设置col 宽度说明,当column拥有children时
@@ -28,19 +23,27 @@ export interface column {
   colspan?: number
   rowspan?: number
   fixed?: 'left' | 'right'
+  isChildren?: boolean // 根据childrenkey属性进行自动合并tbody的行
   defaultVnode?: string
   defaultVnodeProp?: Record<string, string | number | boolean>
   render?: (row: any, index: number) => VNode
 }
 
+//这里的继承会有一个潜在问题  Innner_Column从children 与 column的children类型是不一致的
 export interface Inner_Column extends column {
   fixedCssProperties?: CSSProperties
+  isMergeCell?: boolean //是否是被合并的单元格<被合并的单元格不会渲染>
+  deep?: number //默认1开始 ，0是虚拟层级便于给根节点设置parentAxis,
+  path?: string //节点的路径由column的key 与. 拼接而成
 }
 // 单一表格配置
 /**
  * scorllX横向滚动宽度,如果想设置固定列，就必须设置这个属性
+ * 设置childrenkey后会开启tbody自动合并模式
  */
 export interface baseTableType {
+  childrenKey?: string
+  draggable?: boolean
   scorllX?: number
   headerTitle?: headerTitle
   columns: column[]
@@ -63,9 +66,6 @@ export type data = unknown[]
 // 默认展开项，rows数据的key值
 type defaultExpandItem = string | number
 
-// 默认展开全部
-type defaultExpandAll = boolean
-
 // 配置分页信息
 interface pagination {
   pageSize: number
@@ -73,11 +73,13 @@ interface pagination {
   total: number
 }
 // 总结栏
-interface summary {
-  show: boolean
+export interface summary {
+  scorllX?: number
   columns: Array<{
-    title: string
-    key: string
+    fixed?: 'left' | 'right'
+    width?: number
+    colspan?: number //默认是1
+    data?: any
     render?: (data: any) => VNode
   }>
 }
@@ -85,6 +87,36 @@ interface summary {
 interface customEmpty {
   text: string
   render?: (text: string) => VNode
+}
+// mitt事件总线会用到的事件名称
+export const mittEventField = ['drag-col', 'current-select-row']
+// 初始化事件全局mitt
+export const emitter = mitt()
+//列拖动事件参数类型
+export interface DragCol {
+  tableDex: number
+  parent_path: string //由于要区分顶部节点的所以 parent_pat是以exam-template-table-top开头的
+  keySort: Array<string>
+}
+//当前选中的row
+export interface currentSelectRow {
+  tableDex: number
+  dataIndex: number
+  childrenKey?: string
+  isChildren: boolean
+  childrenIndex?: string
+  offset: number
+}
+/**
+ * 风险操作：
+ * 1.表格数据类型为any，在组件内部流转风险巨大，需要隔离
+ * 2.行拖动排序不能破坏表格数据
+ * 为了解决以上问题，只能在组件内部对data进行加工
+ */
+export interface Inner_data {
+  index: number
+  canDrag: boolean
+  infactData: any
 }
 export const props = {
   combineTables: {
@@ -109,11 +141,6 @@ export const props = {
   defaultExpandItem: {
     type: [String, Number] as PropType<defaultExpandItem>,
     default: '',
-    required: false
-  },
-  defaultExpandAll: {
-    type: Boolean as PropType<defaultExpandAll>,
-    default: false,
     required: false
   },
   pagination: {

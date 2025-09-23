@@ -11,3 +11,22 @@
   align-items: center;
   justify-content: center;
 }
+
+.row-modal {
+  position: fixed;
+  width: 0;
+  top: 0;
+  left: 0;
+  background: #d9d9d9;
+  opacity: 0.5;
+}
+
+.row-modal .drag-icon {
+  width: 20px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: translateX(-100%);
+  cursor: grab;
+}

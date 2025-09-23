@@ -1,8 +1,9 @@
-.base-tr-td {
+.base-tfoot-td {
   text-align: center;
   color: #333333;
   font-size: 12px;
   border: 1px solid #d9d9d9;
+  border-top: none;
   background-color: #ffffff;
   box-sizing: border-box;
   padding: 4px;

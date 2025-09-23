@@ -11,10 +11,10 @@
         content-style="padding: 4px;"
         bordered
         :native-scrollbar="false"
-        show-trigger="arrow-circle"
         collapse-mode="width"
         :collapsed-width="60"
         :width="200"
+        :collapsed="!showName"
         @update-collapsed="isCollapsed"
       >
         <div class="name">
@@ -30,7 +30,7 @@
         style="height: 100vh; display: flex; flex-direction: column"
       >
         <n-layout-header>
-          <BinHeader />
+          <BinHeader v-model:collapse-status="showName" />
           <TagViews />
         </n-layout-header>
         <n-layout-content content-style="padding: 12px;">
