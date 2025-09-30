@@ -11,6 +11,8 @@ interface headerTitle {
  * 关于树形结构colgroup设置col 宽度说明,当column拥有children时
  * 根节点的宽度，等于叶子节点的宽度之和。
  * 所以在配置表格宽度时，如果column有children那么请直接给children设置宽度，children宽度之和等于parent宽度
+ * 表格在匹配数据是会取column的叶子节点形成一个数组,然后取数组里面的每一项的key来进行数据匹配
+ * 表格key不支持a.b.c这种形式的嵌套取值
  */
 export interface column {
   title: string | (() => VNode)
@@ -18,10 +20,10 @@ export interface column {
   width?: number
   align?: 'left' | 'center' | 'right'
   children?: column[]
-  titleRowspan?: number
-  titleColspan?: number
-  colspan?: number
-  rowspan?: number
+  titleRowspan?: number //表头的rowspan   如果不设置，默认是1且可以通过children自动计算
+  titleColspan?: number //表头的colspan   如果不设置，默认是1且可以通过children自动计算
+  colspan?: number //row的 colspan 默认是1  可以通过isChildren  配合childrenKey进行自动计算
+  rowspan?: number //row的 rowspan 默认是1   可以通过isChildren  配合childrenKey进行自动计算
   fixed?: 'left' | 'right'
   isChildren?: boolean // 根据childrenkey属性进行自动合并tbody的行
   defaultVnode?: string
@@ -43,8 +45,8 @@ export interface Inner_Column extends column {
  */
 export interface baseTableType {
   childrenKey?: string
-  draggable?: boolean
-  scorllX?: number
+  draggable?: boolean // 是否开启表格拖动,默认不开启. 当设置为true开启时,会默认开启纵向与横向拖动
+  scorllX?: number // scorllx 与 summary的scorllx 是分开手动设置的.  如果要设置固定列必须设置该属性
   headerTitle?: headerTitle
   columns: column[]
   summary?: summary
@@ -72,7 +74,7 @@ interface pagination {
   pageNumber: number
   total: number
 }
-// 总结栏
+// 总结栏  总结栏的columns与表格的columns不是一一对应的关系,如果一一对应且设置相同的scorllx那么会跟随表格滚动
 export interface summary {
   scorllX?: number
   columns: Array<{

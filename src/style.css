@@ -89,3 +89,21 @@
 .n-input-number {
   width: 100%;
 }
+
+/* 流程图拖拽面板css */
+
+.quanxuan-node .lf-dnd-shape {
+  background-size: cover;
+}
+
+.yuanxing-node .lf-dnd-shape {
+  background-size: cover;
+}
+
+.lingxing-node .lf-dnd-shape {
+  background-size: cover;
+}
+
+.juxing-node .lf-dnd-shape {
+  background-size: cover;
+}

@@ -155,13 +155,13 @@
         type="default"
         @click="cancelForm"
       >
-        取 消
+        {{ props?.cancelText }}
       </n-button>
       <n-button
         type="info"
         @click="confirmForm"
       >
-        确 认
+        {{ props?.submitText }}
       </n-button>
     </div>
   </div>
@@ -185,8 +185,12 @@
       cols?: number
       disabled?: boolean
       showFoot?: boolean
+      cancelText?: string
+      submitText?: string
     }>(),
     {
+      cancelText: '取 消',
+      submitText: '确 认',
       showFoot: true
     }
   )
