@@ -1,5 +1,8 @@
 <template>
-  <div class="flow-set">
+  <div
+    ref="flowSetRef"
+    class="flow-set"
+  >
     <div class="operate-box">
       <n-button
         type="info"
@@ -7,6 +10,45 @@
       >
         创建流程
       </n-button>
+      <n-button
+        type="info"
+        @click="clearSelect"
+      >
+        清除
+      </n-button>
+    </div>
+    <div
+      v-if="selectedFLow.id"
+      class="flow-info"
+    >
+      <div>
+        <div>
+          流程名字：
+          <span class="text-underline">{{ selectedFLow.name }}</span>
+        </div>
+        <div>
+          创建人:
+          <span class="text-underline">{{ selectedFLow.creator }}</span>
+        </div>
+        <div>
+          包含节点：
+          <span class="text-underline">{{ selectedFLow.nodes }}</span>
+          ，含有边:
+          <span class="text-underline">
+            {{ selectedFLow.edges }}
+          </span>
+        </div>
+      </div>
+      <div class="flow-des">
+        <div>流程描述：</div>
+        <pre class="text-underline">{{ selectedFLow.des }}</pre>
+      </div>
+    </div>
+    <div
+      v-else
+      class="not-select"
+    >
+      <n-empty description="当前未选择流程" />
     </div>
     <div class="flow-plane-list">
       <div id="flow-contain"></div>
@@ -35,7 +77,11 @@
               v-for="(item, index) in renderList"
               :key="index"
             >
-              <div class="flow-name">
+              <div
+                :style="item.id === selectedFLow.id ? { color: '#55babe' } : ''"
+                class="flow-name"
+                @click="selectEditToEdit(item)"
+              >
                 <n-ellipsis style="max-width: 180px">
                   {{ item.name }}
                 </n-ellipsis>
@@ -201,6 +247,16 @@
   const searchFlow = ref<string>('')
   const flowList = ref<TableWorkFLowType[]>([])
   const renderList = ref<TableWorkFLowType[]>([])
+
+  const selectedFLow = reactive({
+    id: '',
+    name: '',
+    nodes: 0,
+    edges: 0,
+    des: '',
+    creator: '',
+    creatorId: ''
+  })
   LogicFlow.use(Control)
   LogicFlow.use(DndPanel)
   LogicFlow.use(SelectionSelect)
@@ -257,16 +313,36 @@
         const res = await deleteFLowById(flow.id)
         if (res.code === 200) {
           getFlowList()
+          clearSelect()
         }
         message.info(res.message)
       }
     })
   }
 
+  function selectEditToEdit(flow: TableWorkFLowType) {
+    selectedFLow.creator = flow.creator
+    selectedFLow.creatorId = flow.creatorId
+    selectedFLow.des = flow.des
+    selectedFLow.name = flow.name
+    selectedFLow.id = flow.id
+  }
+
+  function clearSelect() {
+    selectedFLow.id = ''
+    selectedFLow.creator = ''
+    selectedFLow.creatorId = ''
+    selectedFLow.des = ''
+    selectedFLow.edges = 0
+    selectedFLow.nodes = 0
+    selectedFLow.name = ''
+  }
+
   onMounted(() => {
     const container = document.querySelector('#flow-contain')
     // const tabContainer = document.querySelector('.flow-set')
     const width = container?.clientWidth
+    // const tabHeight = tabContainer?.clientHeight
 
     if (container) {
       flowInstance.value = new LogicFlow({
@@ -375,6 +451,23 @@
         flex: 1;
         border: 1px solid #55babe;
       }
+    }
+    .flow-info {
+      margin-top: 12px;
+      display: flex;
+      gap: 16px;
+      .flow-des {
+        display: flex;
+      }
+      .text-underline {
+        color: #55babe;
+        text-decoration: underline;
+      }
+    }
+    .operate-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
   }
 
