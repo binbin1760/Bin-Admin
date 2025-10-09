@@ -102,10 +102,13 @@ declare global {
   const useTagViewsStore: typeof import('../store/modules/tagViews')['useTagViewsStore']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
   const useUserAndDepSelectHook: typeof import('../hooks/useUserAndDepSelectHook')['useUserAndDepSelectHook']
+  const useWorkFlow: typeof import('../store/modules/workFlow')['useWorkFlow']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
   const watchPostEffect: typeof import('vue')['watchPostEffect']
   const watchSyncEffect: typeof import('vue')['watchSyncEffect']
+  const workFlow: typeof import('../store/modules/workFlow')['workFlow']
+  const workFlowStore: typeof import('../store/modules/workFlow')['workFlowStore']
 }
 // for type re-export
 declare global {

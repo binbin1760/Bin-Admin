@@ -3,7 +3,8 @@ import {
   BaseNodeType,
   NodeTableType,
   BaseWorkFlowType,
-  TableWorkFLowType
+  TableWorkFLowType,
+  WorkFlowDetail
 } from '@/views/system-setting/base'
 
 export function addFlowNode(data: BaseNodeType): Promise<BaseResponse<null>> {
@@ -61,6 +62,18 @@ export function checkHasSameName(name: string): Promise<BaseResponse<boolean>> {
 export function deleteFLowById(id: string): Promise<BaseResponse<null>> {
   return request({
     url: '/api/deleteWorkFLowById',
+    method: 'get',
+    params: {
+      id
+    }
+  })
+}
+
+export function getFlowWorkDetailById(
+  id: string
+): Promise<BaseResponse<WorkFlowDetail>> {
+  return request({
+    url: '/api/getWorkFlow',
     method: 'get',
     params: {
       id
