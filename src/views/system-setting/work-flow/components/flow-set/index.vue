@@ -17,39 +17,7 @@
         清除
       </n-button>
     </div>
-    <div
-      v-if="selectedFLow.id"
-      class="flow-info"
-    >
-      <div>
-        <div>
-          流程名字：
-          <span class="text-underline">{{ selectedFLow.name }}</span>
-        </div>
-        <div>
-          创建人:
-          <span class="text-underline">{{ selectedFLow.creator }}</span>
-        </div>
-        <div>
-          包含节点：
-          <span class="text-underline">{{ selectedFLow.nodes }}</span>
-          ，含有边:
-          <span class="text-underline">
-            {{ selectedFLow.edges }}
-          </span>
-        </div>
-      </div>
-      <div class="flow-des">
-        <div>流程描述：</div>
-        <pre class="text-underline">{{ selectedFLow.des }}</pre>
-      </div>
-    </div>
-    <div
-      v-else
-      class="not-select"
-    >
-      <n-empty description="当前未选择流程" />
-    </div>
+    <FLowSetInfo />
     <div class="flow-plane-list">
       <div id="flow-contain"></div>
       <div class="flow-list">
@@ -78,7 +46,9 @@
               :key="index"
             >
               <div
-                :style="item.id === selectedFLow.id ? { color: '#55babe' } : ''"
+                :style="
+                  item.id === selectedNode?.id ? { color: '#55babe' } : ''
+                "
                 class="flow-name"
                 @click="selectEditToEdit(item)"
               >
@@ -184,9 +154,12 @@
     checkHasSameName,
     createWorkFlow,
     deleteFLowById,
-    getAllWorkFlows
+    getAllWorkFlows,
+    getFlowWorkDetailById
   } from '@/api'
   import { SearchOutlined } from '@vicons/antd'
+  import { FLowSetInfo } from '@/views/system-setting/work-flow/components'
+  import { workFlowStore } from '@/store/modules/workFlow'
 
   const message = useMessage()
   const dialog = useDialog()
@@ -194,6 +167,8 @@
     content: 'soft',
     footer: 'soft'
   } as const
+  const useWorkFlow = workFlowStore()
+  const selectedNode = useWorkFlow.selectedNode
   const showAddFlowModal = ref<boolean>(false)
   const flowMode = ref<BaseWorkFlowType>({
     name: '',
@@ -247,16 +222,6 @@
   const searchFlow = ref<string>('')
   const flowList = ref<TableWorkFLowType[]>([])
   const renderList = ref<TableWorkFLowType[]>([])
-
-  const selectedFLow = reactive({
-    id: '',
-    name: '',
-    nodes: 0,
-    edges: 0,
-    des: '',
-    creator: '',
-    creatorId: ''
-  })
   LogicFlow.use(Control)
   LogicFlow.use(DndPanel)
   LogicFlow.use(SelectionSelect)
@@ -320,22 +285,16 @@
     })
   }
 
-  function selectEditToEdit(flow: TableWorkFLowType) {
-    selectedFLow.creator = flow.creator
-    selectedFLow.creatorId = flow.creatorId
-    selectedFLow.des = flow.des
-    selectedFLow.name = flow.name
-    selectedFLow.id = flow.id
+  async function selectEditToEdit(flow: TableWorkFLowType) {
+    const res = await getFlowWorkDetailById(flow.id)
+    if (res.code === 200) {
+      useWorkFlow.setSelectNode(res.data)
+    }
+    message.info(res.message)
   }
 
   function clearSelect() {
-    selectedFLow.id = ''
-    selectedFLow.creator = ''
-    selectedFLow.creatorId = ''
-    selectedFLow.des = ''
-    selectedFLow.edges = 0
-    selectedFLow.nodes = 0
-    selectedFLow.name = ''
+    useWorkFlow.clearSelectNode()
   }
 
   onMounted(() => {

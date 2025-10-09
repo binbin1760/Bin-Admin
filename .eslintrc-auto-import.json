@@ -114,6 +114,9 @@
     "useTagViews": true,
     "useTagViewsStore": true,
     "NButton": true,
-    "NTag": true
+    "NTag": true,
+    "useWorkFlow": true,
+    "workFlow": true,
+    "workFlowStore": true
   }
 }

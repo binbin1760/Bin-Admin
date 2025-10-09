@@ -38,3 +38,45 @@ export interface TableWorkFLowType extends BaseWorkFlowType {
   createTime: number
   updateTime: number
 }
+
+export interface WorkFlowDetail {
+  id: string
+  name: string
+  des: string
+  startNodeId?: string
+  creator: string
+  creatorId: string
+  createTime: number
+  updateTime: number
+  node: BaseFlowNodeRelationType[]
+  edge: FlowNodeRelationsEdge[]
+  flowNode: NodeTableType[]
+}
+
+export interface BaseFlowNodeRelationType {
+  id: string
+  name: string
+  x: number
+  y: number
+  type: string
+  flowNode: NodeTableType
+  workFlow: TableWorkFLowType
+  flowNodeRelationsEdge: FlowNodeRelationsEdge[]
+}
+
+export interface FlowNodeRelationsEdge {
+  id: string
+  des: string
+  sourceNode: BaseFlowNodeRelationType
+  targetNode: BaseFlowNodeRelationType
+}
+
+export interface FlowSelectInfo {
+  id: string
+  name: string
+  nodes: number
+  edges: number
+  des: string
+  creator: string
+  creatorId: string
+}
