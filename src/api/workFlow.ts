@@ -4,7 +4,8 @@ import {
   NodeTableType,
   BaseWorkFlowType,
   TableWorkFLowType,
-  WorkFlowDetail
+  WorkFlowDetail,
+  createFLowNodeRelation
 } from '@/views/system-setting/base'
 
 export function addFlowNode(data: BaseNodeType): Promise<BaseResponse<null>> {
@@ -78,5 +79,15 @@ export function getFlowWorkDetailById(
     params: {
       id
     }
+  })
+}
+
+export function addFlowNodeRelation(
+  data: createFLowNodeRelation
+): Promise<BaseResponse<null>> {
+  return request({
+    url: '/api/add/flowNodeRelation',
+    method: 'post',
+    data
   })
 }
