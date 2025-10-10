@@ -46,9 +46,7 @@
               :key="index"
             >
               <div
-                :style="
-                  item.id === selectedNode?.id ? { color: '#55babe' } : ''
-                "
+                :style="item.id === selectFlow?.id ? { color: '#55babe' } : ''"
                 class="flow-name"
                 @click="selectEditToEdit(item)"
               >
@@ -136,6 +134,13 @@
         </div>
       </template>
     </n-modal>
+
+    <SetFlowNodeRelation
+      v-model:show="showAddRelationDraw"
+      :node="addLogicFLowNode"
+      @cancel="flowNodeRelationDrawCancel"
+      @confirm="flowNodeRelationAfterSubmit"
+    />
   </div>
 </template>
 
@@ -144,7 +149,6 @@
   import { Control, DndPanel, SelectionSelect } from '@logicflow/extension'
   import '@logicflow/core/dist/index.css'
   import '@logicflow/extension/lib/style/index.css'
-  import { baseDataType } from './baseType'
   import {
     BaseWorkFlowType,
     TableWorkFLowType
@@ -158,7 +162,10 @@
     getFlowWorkDetailById
   } from '@/api'
   import { SearchOutlined } from '@vicons/antd'
-  import { FLowSetInfo } from '@/views/system-setting/work-flow/components'
+  import {
+    FLowSetInfo,
+    SetFlowNodeRelation
+  } from '@/views/system-setting/work-flow/components'
   import { workFlowStore } from '@/store/modules/workFlow'
 
   const message = useMessage()
@@ -168,7 +175,7 @@
     footer: 'soft'
   } as const
   const useWorkFlow = workFlowStore()
-  const selectedNode = useWorkFlow.selectedNode
+  const { selectFlow, GetlogicFlowData } = storeToRefs(useWorkFlow)
   const showAddFlowModal = ref<boolean>(false)
   const flowMode = ref<BaseWorkFlowType>({
     name: '',
@@ -215,16 +222,15 @@
     }
   }
   const flowInstance = ref<LogicFlow>()
-  const flowData = ref<baseDataType>({
-    nodes: [],
-    edges: []
-  })
   const searchFlow = ref<string>('')
   const flowList = ref<TableWorkFLowType[]>([])
   const renderList = ref<TableWorkFLowType[]>([])
   LogicFlow.use(Control)
   LogicFlow.use(DndPanel)
   LogicFlow.use(SelectionSelect)
+
+  const showAddRelationDraw = ref<boolean>(false)
+  const addLogicFLowNode = ref<LogicFlow.NodeConfig>()
 
   async function submitFlow() {
     const reslut = await createWorkFlow(flowMode.value)
@@ -235,11 +241,6 @@
     } else {
       message.error(reslut.message)
     }
-    // if (flowInstance.value) {
-    //   const logicflowData =
-    //     flowInstance.value.getGraphData() as unknown as baseDataType
-    //   flowData.value = logicflowData
-    // }
   }
 
   function showNewFlowModal() {
@@ -261,8 +262,6 @@
   }
 
   function searchFLowInList() {
-    console.log(searchFlow.value)
-
     renderList.value = flowList.value.filter((item) =>
       item.name.includes(searchFlow.value ?? '')
     )
@@ -287,16 +286,45 @@
 
   async function selectEditToEdit(flow: TableWorkFLowType) {
     const res = await getFlowWorkDetailById(flow.id)
-    if (res.code === 200) {
+    if (res.code === 200 && flowInstance.value) {
       useWorkFlow.setSelectNode(res.data)
+      useWorkFlow.setFlowNodeList(res.data.flowNode)
+      useWorkFlow.setNodeRelationEdge(res.data.edge)
+      useWorkFlow.setNodeRelations(res.data.node)
+      useWorkFlow.transformToLogicFlowNodes(res.data.node)
+      flowInstance.value.clearData()
+      flowInstance.value.render(GetlogicFlowData.value)
     }
     message.info(res.message)
+  }
+
+  async function refreshRender() {
+    if (selectFlow.value && flowInstance.value) {
+      const res = await getFlowWorkDetailById(selectFlow.value.id)
+      if (res.code === 200) {
+        useWorkFlow.setSelectNode(res.data)
+        useWorkFlow.setFlowNodeList(res.data.flowNode)
+        useWorkFlow.setNodeRelationEdge(res.data.edge)
+        useWorkFlow.setNodeRelations(res.data.node)
+        useWorkFlow.transformToLogicFlowNodes(res.data.node)
+        flowInstance.value.clearData()
+        flowInstance.value.render(GetlogicFlowData.value)
+        message.info('新增节点成功')
+      }
+    }
   }
 
   function clearSelect() {
     useWorkFlow.clearSelectNode()
   }
 
+  function flowNodeRelationDrawCancel() {
+    showAddRelationDraw.value = false
+  }
+
+  function flowNodeRelationAfterSubmit() {
+    refreshRender()
+  }
   onMounted(() => {
     const container = document.querySelector('#flow-contain')
     // const tabContainer = document.querySelector('.flow-set')
@@ -321,7 +349,8 @@
       })
       if (flowInstance.value) {
       }
-      flowInstance.value.render(flowData.value)
+      flowInstance.value.clearData()
+      flowInstance.value.render(GetlogicFlowData.value)
       flowInstance.value.setPatternItems([
         {
           label: '圈选',
@@ -369,7 +398,9 @@
       flowInstance.value.on(
         'node:dnd-add',
         (args: { data: LogicFlow.NodeConfig }) => {
-          flowData.value.nodes.push(args.data)
+          addLogicFLowNode.value = args.data
+          showAddRelationDraw.value = true
+          GetlogicFlowData.value.nodes.push(args.data)
         }
       )
     } else {

@@ -1,30 +1,31 @@
 <template>
   <div>
     <div
-      v-if="getSelectedNode"
+      v-if="selectFlow"
       class="flow-info"
     >
       <div>
         <div>
           流程名字：
-          <span class="text-underline">{{ getSelectedNode.name }}</span>
+          <span class="text-underline">{{ selectFlow.name }}</span>
         </div>
         <div>
           创建人:
-          <span class="text-underline">{{ getSelectedNode.creator }}</span>
+          <span class="text-underline">{{ selectFlow.creator }}</span>
         </div>
         <div>
-          包含节点：
-          <span class="text-underline">{{ getSelectedNode.nodes }}</span>
-          ，含有边:
+          包含节点数：
+          <span class="text-underline">{{ selectFlow.nodes }}</span>
+          个，含有边数:
           <span class="text-underline">
-            {{ getSelectedNode.edges }}
+            {{ selectFlow.edges }}
           </span>
+          条
         </div>
       </div>
       <div class="flow-des">
         <div>流程描述：</div>
-        <pre class="text-underline">{{ getSelectedNode.des }}</pre>
+        <pre class="text-underline">{{ selectFlow.des }}</pre>
       </div>
     </div>
     <div
@@ -40,7 +41,7 @@
   import { workFlowStore } from '@/store/modules/workFlow'
   import { storeToRefs } from 'pinia'
   const useWorkFlow = workFlowStore()
-  const { getSelectedNode } = storeToRefs(useWorkFlow)
+  const { selectFlow } = storeToRefs(useWorkFlow)
 </script>
 <style scoped lang="less">
   .flow-info {

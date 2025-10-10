@@ -6,15 +6,19 @@ import {
   BaseWorkFlowType,
   FlowNodeRelationsEdge,
   FlowSelectInfo,
+  NodeTableType,
   WorkFlowDetail
 } from '@/views/system-setting/base'
+import LogicFlow from '@logicflow/core'
 
 export interface UseWorkFlow {
   logicFlowData: baseDataType
   nodeRelations: BaseFlowNodeRelationType[]
   nodeRelationsEdge: FlowNodeRelationsEdge[]
   workFlowList: BaseWorkFlowType[]
-  selectedNode: FlowSelectInfo | null
+  flowNodeList: NodeTableType[] //真实节点
+  allFlowNodeList: NodeTableType[] //全部真是节点
+  selectedFlow: FlowSelectInfo | null
 }
 
 export const workFlowStore = defineStore({
@@ -26,17 +30,26 @@ export const workFlowStore = defineStore({
     },
     nodeRelations: [],
     nodeRelationsEdge: [],
+    flowNodeList: [],
     workFlowList: [],
-    selectedNode: null
+    allFlowNodeList: [],
+    selectedFlow: null
   }),
   getters: {
-    getSelectedNode(): FlowSelectInfo | null {
-      return this.selectedNode
-    }
+    selectFlow(state): FlowSelectInfo | null {
+      return state.selectedFlow
+    },
+    flowNodes: (state) => state.flowNodeList,
+    flowNodeOptions: (state) => {
+      return state.allFlowNodeList.map((item) => {
+        return { label: item.name, value: item.id }
+      })
+    },
+    GetlogicFlowData: (state) => state.logicFlowData
   },
   actions: {
     setSelectNode(data: WorkFlowDetail) {
-      this.selectedNode = {
+      this.selectedFlow = {
         id: data.id,
         name: data.name,
         des: data.des,
@@ -47,7 +60,45 @@ export const workFlowStore = defineStore({
       }
     },
     clearSelectNode() {
-      this.selectedNode = null
+      this.selectedFlow = null
+    },
+    setFlowNodeList(data: NodeTableType[]) {
+      this.flowNodeList = data
+    },
+    setAllFlowNodeList(data: NodeTableType[]) {
+      this.allFlowNodeList = data
+    },
+    setNodeRelations(data: BaseFlowNodeRelationType[]) {
+      this.nodeRelations = data
+    },
+    setNodeRelationEdge(data: FlowNodeRelationsEdge[]) {
+      this.nodeRelationsEdge = data
+    },
+    //将单个模拟节点转化为Logic需要用到的node数据
+    transformToLogicFlowNode(data: BaseFlowNodeRelationType) {
+      const node: LogicFlow.NodeConfig = {
+        id: data.id,
+        text: data.name,
+        type: data.type,
+        x: data.x,
+        y: data.y
+      }
+      this.logicFlowData.nodes.push(node)
+    },
+    //将多个模拟节点转化为Logic需要用到的node数据
+    transformToLogicFlowNodes(data: BaseFlowNodeRelationType[]) {
+      this.logicFlowData.nodes = data.map((item) => {
+        return {
+          id: item.id,
+          text: item.name,
+          type: item.type,
+          x: item.x,
+          y: item.y
+        }
+      })
+    },
+    getLogicFlowData() {
+      return this.logicFlowData
     }
   }
 })

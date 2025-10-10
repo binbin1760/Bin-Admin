@@ -62,7 +62,8 @@
     deleteFlowNodeById
   } from '@/api/workFlow'
   import { formatDate } from '@/unitls/time'
-
+  import { workFlowStore } from '@/store/modules/workFlow'
+  const useWorkFlow = workFlowStore()
   const message = useMessage()
   const dialog = useDialog()
   const node = ref<BaseNodeType>({
@@ -204,6 +205,7 @@
     const result = await getAllFlowNodes()
     if (result.code === 200) {
       data.value = result.data
+      useWorkFlow.setAllFlowNodeList(result.data)
     } else {
       data.value = []
     }

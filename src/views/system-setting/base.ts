@@ -59,7 +59,8 @@ export interface BaseFlowNodeRelationType {
   x: number
   y: number
   type: string
-  flowNode: NodeTableType
+  path: string
+  flowNode: NodeTableType[]
   workFlow: TableWorkFLowType
   flowNodeRelationsEdge: FlowNodeRelationsEdge[]
 }
@@ -80,3 +81,28 @@ export interface FlowSelectInfo {
   creator: string
   creatorId: string
 }
+
+export interface createFLowNodeRelation {
+  name: string
+  x: number
+  y: number
+  type: string
+  path: string
+  flowNodeId: string
+  workFlowId: string
+}
+
+export const TYPEFILED = [
+  {
+    label: '圆形',
+    value: 'circle'
+  },
+  {
+    label: '正方形',
+    value: 'rect'
+  },
+  {
+    label: '菱形',
+    value: 'diamond'
+  }
+]
