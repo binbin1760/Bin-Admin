@@ -5,7 +5,9 @@ import {
   BaseWorkFlowType,
   TableWorkFLowType,
   WorkFlowDetail,
-  createFLowNodeRelation
+  createFLowNodeRelation,
+  EidtRelationXY,
+  EditRelationNamePath
 } from '@/views/system-setting/base'
 
 export function addFlowNode(data: BaseNodeType): Promise<BaseResponse<null>> {
@@ -89,5 +91,47 @@ export function addFlowNodeRelation(
     url: '/api/add/flowNodeRelation',
     method: 'post',
     data
+  })
+}
+
+export function updateFlowNodeRelationXy(
+  data: EidtRelationXY
+): Promise<BaseResponse<null>> {
+  return request({
+    url: '/api/update/flowNodeRelationXy',
+    method: 'post',
+    data
+  })
+}
+
+export function updateFlowNodeRelationNamePath(
+  data: EditRelationNamePath
+): Promise<BaseResponse<null>> {
+  return request({
+    url: '/api/update/flowNodeRelationNamePath',
+    method: 'post',
+    data
+  })
+}
+
+export function deleteFlowNodeRelationById(
+  id: string
+): Promise<BaseResponse<null>> {
+  return request({
+    url: '/api/delete/flowNodeRelation',
+    method: 'get',
+    params: {
+      id
+    }
+  })
+}
+
+export function deleteFlowNodeRelationsByIds(
+  ids: string[]
+): Promise<BaseResponse<null>> {
+  return request({
+    url: '/api/delete/flowNodeRelations',
+    method: 'post',
+    data: ids
   })
 }

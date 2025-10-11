@@ -141,6 +141,20 @@
       @cancel="flowNodeRelationDrawCancel"
       @confirm="flowNodeRelationAfterSubmit"
     />
+
+    <div
+      ref="rightMenuRef"
+      class="right-menu"
+    >
+      <div
+        v-for="(item, index) in rightMenuConfig"
+        :key="index"
+        @click="item.clickEvent"
+        class="menu-item"
+      >
+        {{ item.label }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -151,6 +165,8 @@
   import '@logicflow/extension/lib/style/index.css'
   import {
     BaseWorkFlowType,
+    EidtRelationXY,
+    RightMenuItmeConfig,
     TableWorkFLowType
   } from '@/views/system-setting/base'
   import { FormItemRule } from 'naive-ui'
@@ -158,8 +174,10 @@
     checkHasSameName,
     createWorkFlow,
     deleteFLowById,
+    deleteFlowNodeRelationById,
     getAllWorkFlows,
-    getFlowWorkDetailById
+    getFlowWorkDetailById,
+    updateFlowNodeRelationXy
   } from '@/api'
   import { SearchOutlined } from '@vicons/antd'
   import {
@@ -231,6 +249,34 @@
 
   const showAddRelationDraw = ref<boolean>(false)
   const addLogicFLowNode = ref<LogicFlow.NodeConfig>()
+
+  const rightMenuRef = ref<HTMLElement | null>()
+  const rightMenuConfig = ref<RightMenuItmeConfig[]>([
+    {
+      label: '编 辑',
+      clickEvent: () => {
+        if (rightMenuRef.value && flowInstance.value) {
+          const currNode = flowInstance.value.getSelectElements()
+          console.log(currNode)
+          rightMenuRef.value.style.display = 'none'
+        }
+      }
+    },
+    {
+      label: '删 除',
+      clickEvent: async () => {
+        if (rightMenuRef.value && flowInstance.value) {
+          const currNode = flowInstance.value.getSelectElements()
+          const res = await deleteFlowNodeRelationById(currNode.nodes[0].id)
+          if (res.code === 200) {
+            flowInstance.value.deleteNode(currNode.nodes[0].id)
+          }
+          message.info(res.message)
+          rightMenuRef.value.style.display = 'none'
+        }
+      }
+    }
+  ])
 
   async function submitFlow() {
     const reslut = await createWorkFlow(flowMode.value)
@@ -309,28 +355,35 @@
         useWorkFlow.transformToLogicFlowNodes(res.data.node)
         flowInstance.value.clearData()
         flowInstance.value.render(GetlogicFlowData.value)
-        message.info('新增节点成功')
       }
     }
   }
 
   function clearSelect() {
-    useWorkFlow.clearSelectNode()
+    if (flowInstance.value) {
+      flowInstance.value.clearData()
+      useWorkFlow.clearGraphData()
+      useWorkFlow.clearSelectNode()
+    }
   }
 
   function flowNodeRelationDrawCancel() {
     showAddRelationDraw.value = false
+    refreshRender()
   }
 
   function flowNodeRelationAfterSubmit() {
     refreshRender()
+  }
+
+  async function updateNodePosition(data: EidtRelationXY) {
+    await updateFlowNodeRelationXy(data)
   }
   onMounted(() => {
     const container = document.querySelector('#flow-contain')
     // const tabContainer = document.querySelector('.flow-set')
     const width = container?.clientWidth
     // const tabHeight = tabContainer?.clientHeight
-
     if (container) {
       flowInstance.value = new LogicFlow({
         container: container as HTMLElement,
@@ -345,26 +398,29 @@
         edgeType: 'bezier',
         keyboard: {
           enabled: true
-        }
+        },
+        isSilentMode: true,
+        nodeTextEdit: false
       })
       if (flowInstance.value) {
       }
       flowInstance.value.clearData()
       flowInstance.value.render(GetlogicFlowData.value)
       flowInstance.value.setPatternItems([
-        {
-          label: '圈选',
-          icon: '/src/assets/flowNode/quanxuan.png',
-          className: 'quanxuan-node',
-          callback: () => {
-            if (flowInstance.value) {
-              flowInstance.value.openSelectionSelect()
-              flowInstance.value.once('selection:selected', () => {
-                flowInstance.value && flowInstance.value.closeSelectionSelect()
-              })
-            }
-          }
-        },
+        // {
+        //   label: '圈选',
+        //   icon: '/src/assets/flowNode/quanxuan.png',
+        //   className: 'quanxuan-node',
+        //   callback: () => {
+        //     if (flowInstance.value) {
+        //       flowInstance.value.openSelectionSelect()
+        //       flowInstance.value.once('selection:selected', () => {
+        //         flowInstance.value && flowInstance.value.closeSelectionSelect()
+        //       })
+        //       console.log(flowInstance.value.getGraphData())
+        //     }
+        //   }
+        // },
         {
           type: 'circle',
           label: '开始节点',
@@ -403,15 +459,67 @@
           GetlogicFlowData.value.nodes.push(args.data)
         }
       )
+      //节点拖动更新数据
+      flowInstance.value.on(
+        'node:drop',
+        (args: { data: LogicFlow.NodeConfig }) => {
+          if (args.data.id) {
+            updateNodePosition({
+              id: args.data.id,
+              x: args.data.x,
+              y: args.data.y
+            })
+          }
+        }
+      )
+      //有键菜单
+      flowInstance.value.on('node:contextmenu', (args: { e: MouseEvent }) => {
+        if (rightMenuRef.value) {
+          rightMenuRef.value.style.display = 'block'
+          rightMenuRef.value.style.top = args.e.clientY + 2 + 'px'
+          rightMenuRef.value.style.left = args.e.clientX + 2 + 'px'
+        }
+      })
+      //节点属性变化
+      flowInstance.value.on('blank:click', () => {
+        if (rightMenuRef.value) {
+          rightMenuRef.value.style.display = 'none'
+        }
+      })
     } else {
       console.error('Container #flow-contain not found')
     }
   })
   getFlowList()
+  watch(
+    () => selectFlow.value,
+    (newVal) => {
+      if (newVal) {
+        if (flowInstance.value) {
+          flowInstance.value.updateEditConfig({
+            isSilentMode: false
+          })
+        }
+      } else {
+        if (flowInstance.value) {
+          flowInstance.value.updateEditConfig({
+            isSilentMode: true
+          })
+        }
+      }
+    },
+    { immediate: true }
+  )
+  onUnmounted(() => {
+    if (flowInstance.value) {
+      flowInstance.value.destroy()
+    }
+  })
 </script>
 <style scoped lang="less">
   .flow-set {
     height: 100%;
+    position: relative;
     .flow-plane-list {
       display: flex;
       align-items: center;
@@ -458,6 +566,32 @@
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    .right-menu {
+      position: fixed;
+      width: 60px;
+      border-radius: 4px;
+      border: 1px solid #e0e0e0;
+      background-color: #ffffff;
+      display: none;
+    }
+    .right-menu .menu-item {
+      width: 100%;
+      text-align: center;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+    .right-menu .menu-item:nth-child(1) {
+      color: #55babe;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .right-menu .menu-item:nth-child(2) {
+      color: red;
+    }
+    .right-menu .menu-item:hover {
+      color: #ffffff;
+      background-color: #55babe;
     }
   }
 

@@ -99,6 +99,12 @@ export const workFlowStore = defineStore({
     },
     getLogicFlowData() {
       return this.logicFlowData
+    },
+    clearGraphData() {
+      this.logicFlowData = {
+        nodes: [],
+        edges: []
+      }
     }
   }
 })
