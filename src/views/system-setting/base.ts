@@ -12,6 +12,8 @@
  *
  */
 
+import LogicFlow from '@logicflow/core'
+
 export interface BaseNodeType {
   name: string
   des: string
@@ -92,17 +94,19 @@ export interface createFLowNodeRelation {
   workFlowId: string
 }
 
-export const TYPEFILED = [
-  {
-    label: '圆形',
-    value: 'circle'
-  },
-  {
-    label: '正方形',
-    value: 'rect'
-  },
-  {
-    label: '菱形',
-    value: 'diamond'
-  }
-]
+export interface EidtRelationXY {
+  id: string
+  y: number
+  x: number
+}
+
+export interface EditRelationNamePath {
+  id: string
+  name: string
+  path: string
+}
+
+export interface RightMenuItmeConfig {
+  label: string
+  clickEvent: () => void
+}
