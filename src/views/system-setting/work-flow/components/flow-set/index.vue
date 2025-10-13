@@ -377,7 +377,10 @@
   }
 
   async function updateNodePosition(data: EidtRelationXY) {
-    await updateFlowNodeRelationXy(data)
+    const res = await updateFlowNodeRelationXy(data)
+    if (res.code) {
+      refreshRender()
+    }
   }
   onMounted(() => {
     const container = document.querySelector('#flow-contain')
@@ -399,7 +402,7 @@
         keyboard: {
           enabled: true
         },
-        isSilentMode: true,
+        isSilentMode: selectFlow.value ? false : true,
         nodeTextEdit: false
       })
       if (flowInstance.value) {
