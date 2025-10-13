@@ -60,7 +60,7 @@ export interface BaseFlowNodeRelationType {
   y: number
   type: string
   path: string
-  flowNode: NodeTableType[]
+  flowNode: NodeTableType
   workFlow: TableWorkFLowType
   flowNodeRelationsEdge: FlowNodeRelationsEdge[]
 }
@@ -98,10 +98,11 @@ export interface EidtRelationXY {
   x: number
 }
 
-export interface EditRelationNamePath {
+export interface EditRelationBase {
   id: string
   name: string
   path: string
+  flowNodeId: string
 }
 
 export interface RightMenuItmeConfig {

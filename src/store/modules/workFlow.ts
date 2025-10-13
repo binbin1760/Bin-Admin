@@ -105,6 +105,9 @@ export const workFlowStore = defineStore({
         nodes: [],
         edges: []
       }
+    },
+    getNodeRelationById(id: string): BaseFlowNodeRelationType | undefined {
+      return this.nodeRelations.find((item) => item.id === id)
     }
   }
 })
