@@ -12,8 +12,6 @@
  *
  */
 
-import LogicFlow from '@logicflow/core'
-
 export interface BaseNodeType {
   name: string
   des: string
