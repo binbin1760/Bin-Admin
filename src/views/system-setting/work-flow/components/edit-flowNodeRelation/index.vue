@@ -68,27 +68,34 @@
 </template>
 
 <script setup lang="ts">
-  import { LogicFlow } from '@logicflow/core'
   import { workFlowStore } from '@/store/modules/workFlow'
   import { storeToRefs } from 'pinia'
-  import { createFLowNodeRelation } from '@/views/system-setting/base'
-  import { addFlowNodeRelation } from '@/api'
+  import { EditRelationBase } from '@/views/system-setting/base'
+  import { getFlowNodeDetailByIid, updateFlowNodeRelationBase } from '@/api'
   import { FormRules } from 'naive-ui'
 
   const formRef = ref<any>(null)
   const useWorkFlow = workFlowStore()
 
-  const { selectFlow, flowNodeOptions } = storeToRefs(useWorkFlow)
+  const { flowNodeOptions } = storeToRefs(useWorkFlow)
   const props = defineProps<{
-    node?: LogicFlow.NodeConfig
+    id?: string
   }>()
 
   const show = defineModel('show', { required: true, default: false })
   const emit = defineEmits(['cancel', 'confirm'])
-  const mode = reactive({
+  const mode = reactive<{
+    id: string
+    path: string
+    name: string
+    flowNodeId: string | null
+    type: string
+  }>({
+    id: '',
     path: '',
     name: '',
-    flowNodeId: null
+    flowNodeId: null,
+    type: ''
   })
   const rules = {
     path: {
@@ -112,26 +119,19 @@
   } as FormRules
 
   async function submitRelation() {
-    if (props.node) {
-      const data: createFLowNodeRelation = {
+    if (props.id) {
+      const data: EditRelationBase = {
+        id: props.id,
         name: mode.name,
         path: mode.path,
-        flowNodeId: mode.flowNodeId ?? '',
-        x: props.node.x,
-        y: props.node.y,
-        workFlowId: selectFlow.value ? selectFlow.value.id : '',
-        type: props.node.type
+        flowNodeId: mode.flowNodeId ?? ''
       }
 
-      const canSubmit = ['x', 'y', 'workFlowId', 'type'].every(
-        (item) => data[item]
-      )
-
       formRef.value?.validate(async (errors: Error) => {
-        if (!errors && canSubmit) {
-          const res = await addFlowNodeRelation(data)
+        if (!errors) {
+          const res = await updateFlowNodeRelationBase(data)
           if (res.code === 200) {
-            emit('confirm', props.node)
+            emit('confirm')
             show.value = false
           }
         }
@@ -141,8 +141,24 @@
 
   function cancelSubmit() {
     show.value = false
-    emit('cancel', props.node)
   }
+
+  async function getEditNode() {
+    if (props.id) {
+      const res = await getFlowNodeDetailByIid(props.id)
+      if (res.code === 200) {
+        mode.id = res.data.id
+        mode.name = res.data.name
+        mode.path = res.data.path
+        mode.flowNodeId = res.data.flowNode.id
+        mode.type = res.data.type
+      }
+    }
+  }
+
+  watch(props, () => {
+    getEditNode()
+  })
 </script>
 <style scoped lang="less">
   .draw-footer {

@@ -142,6 +142,12 @@
       @confirm="flowNodeRelationAfterSubmit"
     />
 
+    <EditFlowNodeRelation
+      v-model:show="showEditNodeDraw"
+      :id="editNodeId"
+      @confirm="flowNodeRelationDrawCancel"
+    />
+
     <div
       ref="rightMenuRef"
       class="right-menu"
@@ -182,7 +188,8 @@
   import { SearchOutlined } from '@vicons/antd'
   import {
     FLowSetInfo,
-    SetFlowNodeRelation
+    SetFlowNodeRelation,
+    EditFlowNodeRelation
   } from '@/views/system-setting/work-flow/components'
   import { workFlowStore } from '@/store/modules/workFlow'
 
@@ -257,7 +264,8 @@
       clickEvent: () => {
         if (rightMenuRef.value && flowInstance.value) {
           const currNode = flowInstance.value.getSelectElements()
-          console.log(currNode)
+          editNodeId.value = currNode.nodes[0].id
+          showEditNodeDraw.value = true
           rightMenuRef.value.style.display = 'none'
         }
       }
@@ -277,6 +285,9 @@
       }
     }
   ])
+
+  const showEditNodeDraw = ref<boolean>(false)
+  const editNodeId = ref<string>()
 
   async function submitFlow() {
     const reslut = await createWorkFlow(flowMode.value)
@@ -483,7 +494,7 @@
           rightMenuRef.value.style.left = args.e.clientX + 2 + 'px'
         }
       })
-      //节点属性变化
+      //点击画布空白处
       flowInstance.value.on('blank:click', () => {
         if (rightMenuRef.value) {
           rightMenuRef.value.style.display = 'none'
