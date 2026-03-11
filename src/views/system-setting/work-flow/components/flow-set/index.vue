@@ -170,6 +170,7 @@
   import '@logicflow/core/dist/index.css'
   import '@logicflow/extension/lib/style/index.css'
   import {
+    AddEdges,
     BaseWorkFlowType,
     EidtRelationXY,
     RightMenuItmeConfig,
@@ -177,6 +178,7 @@
   } from '@/views/system-setting/base'
   import { FormItemRule } from 'naive-ui'
   import {
+    addFlowNodeRelationEdge,
     checkHasSameName,
     createWorkFlow,
     deleteFLowById,
@@ -500,6 +502,26 @@
           rightMenuRef.value.style.display = 'none'
         }
       })
+      //边文本编辑
+      flowInstance.value.on(
+        'edge:dbclick',
+        (args: { e: MouseEvent; data: LogicFlow.EdgeConfig }) => {
+          console.log(args)
+        }
+      )
+      //新增边
+      flowInstance.value.on(
+        'edge:add',
+        (args: { data: LogicFlow.EdgeConfig }) => {
+          const data: AddEdges = {
+            des: '',
+            workFlowId: selectFlow.value?.id as string,
+            sourceNodeId: args.data.sourceNodeId,
+            targetNodeId: args.data.targetNodeId
+          }
+          addFlowNodeRelationEdge(data)
+        }
+      )
     } else {
       console.error('Container #flow-contain not found')
     }

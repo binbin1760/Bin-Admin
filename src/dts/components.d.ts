@@ -62,6 +62,7 @@ declare module 'vue' {
     NTabPane: typeof import('naive-ui')['NTabPane']
     NTabs: typeof import('naive-ui')['NTabs']
     NTag: typeof import('naive-ui')['NTag']
+    NTree: typeof import('naive-ui')['NTree']
     NTreeSelect: typeof import('naive-ui')['NTreeSelect']
     ReceiveMessage: typeof import('./../components/base-chat/component/receiveMessage/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
