@@ -109,3 +109,10 @@ export interface RightMenuItmeConfig {
   label: string
   clickEvent: () => void
 }
+
+export interface AddEdges {
+  workFlowId: string
+  des: string
+  sourceNodeId: string
+  targetNodeId: string
+}

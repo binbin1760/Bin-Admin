@@ -8,7 +8,8 @@ import {
   createFLowNodeRelation,
   EidtRelationXY,
   EditRelationBase,
-  BaseFlowNodeRelationType
+  BaseFlowNodeRelationType,
+  AddEdges
 } from '@/views/system-setting/base'
 
 export function addFlowNode(data: BaseNodeType): Promise<BaseResponse<null>> {
@@ -146,5 +147,15 @@ export function getFlowNodeDetailByIid(
     params: {
       id
     }
+  })
+}
+
+export function addFlowNodeRelationEdge(
+  data: AddEdges
+): Promise<BaseResponse<null>> {
+  return request({
+    url: '/api/create/edge',
+    method: 'post',
+    data
   })
 }
