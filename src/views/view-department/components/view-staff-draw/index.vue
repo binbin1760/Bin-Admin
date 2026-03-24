@@ -56,28 +56,6 @@
     },
     {
       type: 'input',
-      label: 'E-mail',
-      path: 'email',
-      value: null,
-      rule: {
-        required: true,
-        message: 'E-mail不能为空',
-        trigger: ['blur']
-      }
-    },
-    {
-      type: 'input',
-      label: '联系电话',
-      path: 'phone',
-      value: null,
-      rule: {
-        required: true,
-        message: '联系电话不能为空',
-        trigger: ['blur']
-      }
-    },
-    {
-      type: 'input',
       label: '所属部门',
       path: 'department',
       value: null

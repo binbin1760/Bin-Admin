@@ -57,18 +57,11 @@ export interface StaffType {
   role: string
   companyTenure: number // 工龄
   hireDate: number
-  secondaryHireDate: number
   directSuperior: string // 直接上级
   directSuperiorId: string // 直接上级id
   position: string // 职位
   sarayGroup: string // 薪资组
   jobLevel: string // 职级
-  jobGrade: 1 | 2 | 3 // 序列： 1.M序列 2.P序列 3.S序列
-  mGrade: string // M级
-  pGrade: string // P级
-  sGrade: string // S级
-  noeGrade: string // 一级序列
-  towGrade: string // 二级序列
   identity: number // 身份 1.正式员工 2.实习生 3.劳务派遣  4.外包人员
   status: 1 | 2 | 3
   agent?: string // 代理人
