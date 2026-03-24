@@ -3,7 +3,6 @@ import {
   DepartmentType,
   IDENTITY,
   ISVIRTUALORG,
-  JOBGRADE,
   LEVEL,
   OPERATION_OR_FUNCTION,
   STAFF_JOB_LEVEL,
@@ -255,18 +254,11 @@ export const useDepartmentHook = () => {
     code: null,
     companyTenure: null,
     hireDate: null,
-    secondaryHireDate: null,
     directSuperior: null,
     directSuperiorId: null,
     position: null,
     sarayGroup: null,
     jobLevel: null,
-    jobGrade: null,
-    mGrade: null,
-    pGrade: null,
-    sGrade: null,
-    noeGrade: null,
-    towGrade: null,
     identity: null,
     status: null,
     agent: null,
@@ -335,13 +327,6 @@ export const useDepartmentHook = () => {
         }
       },
       {
-        type: 'date',
-        label: '二次入职时间',
-        path: 'secondaryHireDate',
-        value: null,
-        gridSpan: 6
-      },
-      {
         type: 'tree-select',
         label: '直接上级',
         path: 'directSuperiorId',
@@ -399,83 +384,6 @@ export const useDepartmentHook = () => {
           { label: '成都薪资组', value: '成都薪资组' },
           { label: '安岳薪资组', value: '安岳薪资组' },
           { label: '乐山薪资组', value: '乐山薪资组' }
-        ]
-      },
-      {
-        type: 'select',
-        label: 'MPS序列',
-        path: 'jobGrade',
-        gridSpan: 6,
-        rule: {
-          type: 'number',
-          required: true,
-          message: '请在M,P,S三个序列选择一个',
-          trigger: ['blur', 'change']
-        },
-        options: [
-          { label: 'M序列', value: JOBGRADE.M_GRADE },
-          { label: 'P序列', value: JOBGRADE.P_GRADE },
-          { label: 'S序列', value: JOBGRADE.S_GRADE }
-        ]
-      },
-      {
-        type: 'select',
-        label: 'M序列',
-        path: 'mGrade',
-        gridSpan: 6,
-        disabled: userFormModel.value.jobGrade === 1 ? false : true,
-        options: [
-          { label: '架构师', value: 'AA' },
-          { label: '小组长', value: '111' },
-          { label: '打灰的', value: '111A' }
-        ]
-      },
-      {
-        type: 'select',
-        label: 'P序列',
-        path: 'pGrade',
-        gridSpan: 6,
-        disabled: userFormModel.value.jobGrade === 2 ? false : true,
-        options: [
-          { label: 'P序列的架构师', value: 'AA' },
-          { label: 'p序列的小组长', value: '111' },
-          { label: '襟', value: '111A' }
-        ]
-      },
-      {
-        type: 'select',
-        label: 'S序列',
-        path: 'sGrade',
-        gridSpan: 6,
-        disabled: userFormModel.value.jobGrade === 3 ? false : true,
-        options: [
-          { label: 'super 打灰的', value: 'AA' },
-          { label: 'SSS 打会的', value: '111' },
-          { label: '摆渡人', value: '111A' }
-        ]
-      },
-      {
-        type: 'select',
-        label: '一级序列',
-        path: 'noeGrade',
-        gridSpan: 6,
-        disabled: false,
-        options: [
-          { label: '水', value: 'AA' },
-          { label: '开水', value: '111' },
-          { label: '白开水', value: '111A' }
-        ]
-      },
-      {
-        type: 'select',
-        label: '二级序列',
-        path: 'towGrade',
-        gridSpan: 6,
-        disabled: false,
-        options: [
-          { label: '咖啡', value: 'AA' },
-          { label: '甜的咖啡', value: '111' },
-          { label: '苦的咖啡', value: '111A' }
         ]
       },
       {

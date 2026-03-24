@@ -80,7 +80,6 @@
   import {
     DepartmentType,
     IDENTITY_NAME,
-    JOB_GRADE_NAME,
     STAFF_STATUS,
     StaffType
   } from '../baseType'
@@ -194,39 +193,6 @@
       title: '职级',
       align: 'center',
       key: 'jobLevel'
-    },
-    {
-      title: 'MP/S序列',
-      align: 'center',
-      key: 'jobGrade',
-      render: (row) => {
-        return h('span', {}, JOB_GRADE_NAME[row.jobGrade - 1])
-      }
-    },
-    {
-      title: 'M序列',
-      align: 'center',
-      key: 'mGrade'
-    },
-    {
-      title: 'P序列',
-      align: 'center',
-      key: 'pGrade'
-    },
-    {
-      title: 'S序列',
-      align: 'center',
-      key: 'sGrade'
-    },
-    {
-      title: '一级序列',
-      align: 'center',
-      key: 'noeGrade'
-    },
-    {
-      title: '二级序列',
-      align: 'center',
-      key: 'twoGrade'
     },
     {
       title: '身份',
