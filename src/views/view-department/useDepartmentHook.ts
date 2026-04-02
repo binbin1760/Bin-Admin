@@ -241,7 +241,6 @@ export const useDepartmentHook = () => {
           nodeData: topDep
         }
       ]
-
       if (topDep.depId !== currUserDep.depId && currUserDep.depId) {
         getDepData(currUserDep.depId)
       }

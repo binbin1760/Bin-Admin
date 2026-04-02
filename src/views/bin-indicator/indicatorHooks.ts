@@ -1,5 +1,5 @@
 import { AsyncBaseFormConfig } from '@/components'
-import { BaseIndicator, DIMENSION_FIELDS, DivideParams } from './baseType'
+import { BaseIndicator, DIMENSION_FIELDS } from './baseType'
 import { ref, computed } from 'vue'
 import { useUserAndDepSelectHook } from '@/hooks'
 import { TreeSelectOption } from 'naive-ui'

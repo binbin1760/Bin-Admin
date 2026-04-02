@@ -104,12 +104,26 @@ export const useUserAndDepSelectHook = () => {
       }
     }
   }
+
+  //n-tree-select部门选择器的load函数
+  async function depOnload(option: TreeSelectOption) {
+    const res = await getDepChildNdoeData(option.key as string)
+    option.children = res as unknown as TreeSelectOption[]
+  }
+
+  //n-tree-select员工选择器的load函数
+  async function userOnLoad(option: TreeSelectOption) {
+    const res = await getDepAndUserSelectNodeData(option.key as string)
+    option.children = res as unknown as TreeSelectOption[]
+  }
   initDepAndUserSelectNodeData()
   getinitDepData()
   return {
     initData,
     initDepData,
     getDepAndUserSelectNodeData,
-    getDepChildNdoeData
+    getDepChildNdoeData,
+    depOnload,
+    userOnLoad
   }
 }

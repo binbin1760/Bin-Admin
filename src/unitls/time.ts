@@ -53,3 +53,10 @@ export function compareTowTime(
       : new Date(formatDateToTimeStamp(timeStamp2))
   return date1 > date2
 }
+
+export function getNowMonthTimeStep() {
+  const now = new Date()
+  const start = new Date(now.getFullYear(), now.getMonth(), 1).getTime()
+  const end = new Date(now.getFullYear(), now.getMonth() + 1, 0).getTime()
+  return [start, end]
+}
