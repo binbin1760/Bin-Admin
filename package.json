@@ -19,6 +19,7 @@
     "highlight.js": "^11.11.1",
     "less": "^4.2.0",
     "less-loader": "^12.2.0",
+    "lodash": "^4.18.1",
     "markdown-it": "^14.1.0",
     "markdown-it-code-copy": "^0.2.2",
     "markdown-it-highlightjs": "^4.2.0",

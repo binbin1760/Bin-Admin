@@ -1,0 +1,9 @@
+.form-gird-container {
+  display: grid;
+  grid-template-rows: auto;
+}
+
+.btn-list {
+  display: flex;
+  gap: 12px;
+}

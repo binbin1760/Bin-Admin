@@ -6,9 +6,11 @@ import excelTable from './excel-table/table'
 import BaseChat from './base-chat/baseChat'
 import treeChat from './tree-chat/treeChat'
 import examTemplateTable from './exam-template-table/examTemplateTable'
+import dynamicForm from './dynamic-form/dynamic-form'
 //类型导出
 import { AsyncBaseFormConfig } from './async-bese-form/types'
 import { ColumnsType } from './excel-table/types'
+import { DynamicFormItem, BtnConfig } from './dynamic-form/props'
 
 export {
   AppProvider,
@@ -18,6 +20,7 @@ export {
   excelTable,
   examTemplateTable,
   BaseChat,
-  treeChat
+  treeChat,
+  dynamicForm
 }
-export type { AsyncBaseFormConfig, ColumnsType }
+export type { AsyncBaseFormConfig, ColumnsType, DynamicFormItem, BtnConfig }
