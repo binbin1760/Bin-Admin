@@ -1,4 +1,5 @@
-import { BaseResponse, request } from '@/unitls'
+import { BaseResponse } from '@/unitls/request'
+import request from '@/unitls/request'
 import { DepartmentType, StaffType } from '@/views/view-department/baseType'
 
 // nodeType 0 表示员工节点  1表示组织节点
@@ -12,65 +13,37 @@ export function getAllDepartments(query: {
   pageSize: number
   id?: string
 }): Promise<BaseResponse<DepartmentType[]>> {
-  return request({
-    url: '/api/get/allDepartment',
-    method: 'get',
-    params: query
-  })
+  return request.get('/api/get/allDepartment', query)
 }
 
 export function addDepartment(
   data: DepartmentType
 ): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/add/department',
-    method: 'post',
-    data
-  })
+  return request.post('/api/add/department', data)
 }
 
 export function editDepartment(
   data: DepartmentType
 ): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/update/department',
-    method: 'post',
-    data
-  })
+  return request.post('/api/update/department', data)
 }
 
 export function deleteDepartmentById(id: string): Promise<BaseResponse<null>> {
-  return request({
-    url: `/api/delete/department?id=${id}`,
-    method: 'get'
-  })
+  return request.get(`/api/delete/department`, { id })
 }
 
 export function getDepartmentTree(
   id?: string
 ): Promise<BaseResponse<DepartmentType[]>> {
-  return request({
-    url: `/api/async/tree/department`,
-    method: 'get',
-    params: { id }
-  })
+  return request.get(`/api/async/tree/department`, { id })
 }
 
 export function getTopDep(): Promise<BaseResponse<DepartmentType>> {
-  return request({
-    url: '/api/get/topDepartment',
-    method: 'get'
-  })
+  return request.get('/api/get/topDepartment')
 }
 
 export function getChildDepAndUserList(
   depId: string
 ): Promise<BaseResponse<ChilDepListAndUserlist>> {
-  return request({
-    url: '/api/get/childrenAndChildUser',
-    method: 'get',
-    params: {
-      depId
-    }
-  })
+  return request.get('/api/get/childrenAndChildUser', { depId })
 }

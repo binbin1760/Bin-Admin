@@ -60,7 +60,8 @@ export default defineConfig(({ mode, command }) => {
       proxy: {
         '/api': {
           target: VITE_BASE_API,
-          changeOrigin: true
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '')
         },
         '/ws': {
           target: VITE_BASE_WS,

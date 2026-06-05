@@ -1,4 +1,5 @@
-import { BaseResponse, request } from '@/unitls'
+import { BaseResponse } from '@/unitls/request'
+import request from '@/unitls/request'
 import {
   PerformancePlan,
   PlanTable,
@@ -6,19 +7,11 @@ import {
 } from '@/views/performance-plan/index'
 
 export function createPlan(data: PerformancePlan): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/post/plan/create',
-    method: 'post',
-    data
-  })
+  return request.post('/api/post/plan/create', data)
 }
 
 export function getPlanList(
   data: PlanSearchParams
 ): Promise<BaseResponse<PlanTable[]>> {
-  return request({
-    url: '/api/post/plan/list',
-    method: 'post',
-    data
-  })
+  return request.post('/api/post/plan/list', data)
 }

@@ -1,5 +1,5 @@
-import { BaseResponse, request } from '@/unitls'
-
+import { BaseResponse } from '@/unitls/request'
+import request from '@/unitls/request'
 interface BaseChatType {
   id: string
   name: string
@@ -23,42 +23,23 @@ export interface ChatType extends BaseChatType {
 }
 
 export function addNewChat(name: string): Promise<BaseResponse<ChatType>> {
-  return request({
-    url: '/api/add/chat',
-    method: 'get',
-    params: { name }
-  })
+  return request.get('/api/add/chat', { name })
 }
 
 export function getChatById(id: string): Promise<BaseResponse<ChatType>> {
-  return request({
-    url: '/api/get/chat',
-    method: 'get',
-    params: { id }
-  })
+  return request.get('/api/get/chat', { id })
 }
 
 export function getUserChats(): Promise<BaseResponse<ChatType[]>> {
-  return request({
-    url: '/api/user/chats',
-    method: 'get'
-  })
+  return request.get('/api/user/chats')
 }
 
 export function deleteAiChat(id: string): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/delete/aiChat',
-    method: 'get',
-    params: { id }
-  })
+  return request.get('/api/delete/aiChat', { id })
 }
 
 export function addChatMessage(
   data: chatMessageParams
 ): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/add/chatmessage',
-    method: 'post',
-    data
-  })
+  return request.post('/api/add/chatmessage', data)
 }

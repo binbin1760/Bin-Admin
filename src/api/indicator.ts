@@ -1,4 +1,5 @@
-import { request, BaseResponse } from '@/unitls'
+import { BaseResponse } from '@/unitls/request'
+import request from '@/unitls/request'
 import {
   BaseIndicator,
   DivideParams,
@@ -12,42 +13,26 @@ export function getAllIndicator(query: {
   page: number
   pageSize: number
 }): Promise<BaseResponse<indicatorInTable[]>> {
-  return request({
-    url: '/api/getAllIndicator',
-    method: 'get',
-    params: query
-  })
+  return request.get('/api/getAllIndicator', query)
 }
 
 export function createIndicator(
   data: BaseIndicator
 ): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/createIndicator',
-    method: 'post',
-    data
-  })
+  return request.post('/api/createIndicator', data)
 }
 
 export function editIndicator(
   data: EditIndicatorParams
 ): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/edit/indicator',
-    method: 'post',
-    data
-  })
+  return request.post('/api/edit/indicator', data)
 }
 
 export function deleteInidcatorByTopIndicatorId(
   topIndicaorId: string
 ): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/delete/topIndicaorId',
-    method: 'get',
-    params: {
-      topIndicaorId
-    }
+  return request.get('/api/delete/topIndicaorId', {
+    topIndicaorId
   })
 }
 
@@ -55,29 +40,17 @@ export function getIndicatorTree(data: {
   topIndicatorId: string
   id?: string
 }): Promise<BaseResponse<IndicatorTree[]>> {
-  return request({
-    url: '/api/getIndicatorTree',
-    method: 'get',
-    params: data
-  })
+  return request.get('/api/getIndicatorTree', data)
 }
 
 export function divideIndicator(
   data: DivideParams
 ): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/divider/indicator',
-    method: 'post',
-    data
-  })
+  return request.post('/api/divider/indicator', data)
 }
 
 export function deleteNodeInTree(
   data: DeleteNodeParams
 ): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/delete/nodeInTree',
-    method: 'post',
-    data
-  })
+  return request.post('/api/delete/nodeInTree', data)
 }

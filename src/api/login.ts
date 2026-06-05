@@ -1,4 +1,5 @@
-import { request, BaseResponse } from '@/unitls/request'
+import { BaseResponse } from '@/unitls/request'
+import request from '@/unitls/request'
 
 interface LoginInfo {
   code: string
@@ -12,11 +13,6 @@ interface cacheUser {
   treeLevel: number
   name: string
 }
-
 export function login(data: LoginInfo): Promise<BaseResponse<cacheUser>> {
-  return request({
-    url: '/api/login',
-    method: 'post',
-    data
-  })
+  return request.post('/api/login', data)
 }
