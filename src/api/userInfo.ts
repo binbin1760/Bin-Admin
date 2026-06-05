@@ -1,4 +1,5 @@
-import { request, BaseResponse } from '@/unitls/request'
+import { BaseResponse } from '@/unitls/request'
+import request from '@/unitls/request'
 import { StaffType } from '@/views/view-department/baseType'
 
 export function addUser(data: StaffType): Promise<BaseResponse<null>> {
@@ -6,19 +7,11 @@ export function addUser(data: StaffType): Promise<BaseResponse<null>> {
     data.agentStartTime = data.agentTime[0]
     data.agentEndTime = data.agentTime[1]
   }
-  return request({
-    url: '/api/add/user',
-    method: 'post',
-    data
-  })
+  return request.post('/api/add/user', data)
 }
 
 export function updateUserInfo(data: StaffType): Promise<BaseResponse<null>> {
-  return request({
-    url: '/api/update/user',
-    method: 'post',
-    data
-  })
+  return request.post('/api/update/user', data)
 }
 
 export function getUserList(query: {
@@ -26,25 +19,15 @@ export function getUserList(query: {
   pageSize: number
   id?: string
 }): Promise<BaseResponse<StaffType[]>> {
-  return request({
-    url: '/api/get/user/list',
-    method: 'get',
-    params: query
-  })
+  return request.get('/api/get/user/list', query)
 }
 
 export function getUserById(): Promise<BaseResponse<StaffType>> {
-  return request({
-    url: '/api/get/userById',
-    method: 'get'
-  })
+  return request.get('/api/get/userById')
 }
 
 export function deleteUserById(id: string): Promise<BaseResponse<null>> {
-  return request({
-    url: `/api/delete/user?id=${id}`,
-    method: 'get'
-  })
+  return request.get(`/api/delete/user`, { id })
 }
 
 export function editUserInfo(data: StaffType) {
@@ -56,9 +39,5 @@ export function editUserInfo(data: StaffType) {
     rest.agentStartTime = undefined
     rest.agentEndTime = undefined
   }
-  return request({
-    url: '/api/update/user',
-    method: 'post',
-    data: rest
-  })
+  return request.post('/api/update/user', rest)
 }

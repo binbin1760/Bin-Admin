@@ -110,7 +110,6 @@
   import { AddIndicator, ViewIndicator, EditIndicator } from './components'
   import { formatDate } from '@/unitls'
 
-  const nreeSelectRef = ref<null>()
   const dialog = useDialog()
   const message = useMessage()
   const router = useRouter()

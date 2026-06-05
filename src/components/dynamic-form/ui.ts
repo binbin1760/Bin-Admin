@@ -6,7 +6,8 @@ import {
   NSelect,
   NSwitch,
   NTimePicker,
-  NTreeSelect
+  NTreeSelect,
+  NColorPicker
 } from 'naive-ui'
 import { DynamicCheckoutGroup, DynamicRadioGroup } from './components'
 
@@ -20,5 +21,6 @@ export const componentList = {
   NSelect,
   NSwitch,
   NTimePicker,
-  NTreeSelect
+  NTreeSelect,
+  NColorPicker
 }

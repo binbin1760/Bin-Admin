@@ -54,7 +54,7 @@ export interface EditIndicatorParams extends BaseIndicator {
 }
 
 export interface indicatorInTable extends IndicatorTree {
-  divideInfo: Nullable<DivideParams>
+  divideInfo?: DivideParams
 }
 
 export interface DeleteNodeParams {

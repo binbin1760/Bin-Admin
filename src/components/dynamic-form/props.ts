@@ -16,6 +16,7 @@ export type ComponentName =
   | 'NSwitch'
   | 'NTimePicker'
   | 'NTreeSelect'
+  | 'NColorPicker'
 
 export interface RealatedField {
   path: string //关联字段路径，支持多层级用点分开  eg:obj.key1.key2.key3.key4
